@@ -1,20 +1,30 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-
-export default function Dashboard() {
+export default function Home() {
     return (
-        <AuthenticatedLayout
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
-        >
-            <Head title="Dashboard" />
+        <>
+            <header>HEADER HEADER HEADER</header>
+            <br /><br /><br />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">You're logged in!</div>
-                    </div>
-                </div>
-            </div>
-        </AuthenticatedLayout>
+            <section>
+                <p>Section 1</p>
+                <h1>Ini Isi Section 1 bakal ada kek Foto website, Tulisan gede, Tulisan kecil (Introduction)</h1>
+            </section>
+            <br /><br /><br />
+
+            <section>
+                <p>Section 2</p>
+                <h1>Ini Isi Section 2 bakal ada tulisan mengenai tugas ini buat apa</h1>
+            </section>
+            <br /><br /><br />
+
+            <section>
+                <p>Section 3</p>
+                <h1>Ini Isi Section 3 bakal ada tulisan mengenai kita ber4 ACAK 😎</h1>
+            </section>
+            <br /><br /><br />
+
+            <footer>
+                Intinya ini footer ada copyright
+            </footer>
+        </>
     );
 }

@@ -28,4 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/calendar', function () {
+    return Inertia::render('Calendar');
+});
+
 require __DIR__ . '/auth.php';

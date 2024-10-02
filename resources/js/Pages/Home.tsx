@@ -1,11 +1,12 @@
 import MainLayout from "@/Layouts/Main/MainLayout";
 import backGround from "./assets/VectorImage.png";
+import Dev from "../Components/Developer";
 
 export default function Home() {
     return (
         <MainLayout title="Home">
             <section>
-                <div className="flex flex-row items-center justify-center border p-5 space-x-16 bg-gradient-to-r from-cyan-500 to-blue-500">
+                <div className="flex flex-row items-center justify-evenly bg-gradient-to-r from-cyan-500 to-blue-500">
                     <div
                         className="flex h-96 w-96 opacity-40"
                         style={{
@@ -16,7 +17,7 @@ export default function Home() {
                     ></div>
 
                     <div className="flex flex-col w-1/5 space-y-16">
-                        <div className="min-w-fit text-center text-5xl">
+                        <div className="min-w-fit text-center text-4xl">
                             <p>
                                 ACAK LMS <br /> Your Unique Learning Experience
                                 <br /> Learning Adventure Starts Here
@@ -55,8 +56,24 @@ export default function Home() {
             </section>
 
             <section>
-                <p>Learning platforms and services made by</p>
+                <div className="flex flex-col justify-center items-center">
+                    <p className="text-5xl">
+                        Learning platforms and services made by
+                    </p>
+                </div>
+                <div className="flex flex-row justify-evenly">
+                    <Dev image={backGround} name={"Antony"} role={"Komti"} />
+                    <Dev image={backGround} name={"Adit"} role={"Back-End"} />
+                    <Dev
+                        image={backGround}
+                        name={"Karina"}
+                        role={"Front-End"}
+                    />
+                    <Dev image={backGround} name={"Charles"} role={"DBA"} />
+                </div>
             </section>
+
+            <section></section>
         </MainLayout>
     );
 }

@@ -24,7 +24,7 @@ export default function Home() {
                             </p>
                         </div>
 
-                        <div className="w-auto text-center">
+                        {/* <div className="w-auto text-center">
                             <p>
                                 Frustrated with rigid, overpriced learning
                                 platforms? Discover a fully adaptable,
@@ -41,7 +41,7 @@ export default function Home() {
                                 with your needs—crafted with care by a dedicated
                                 team of professionals!
                             </p>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div
@@ -73,7 +73,25 @@ export default function Home() {
                 </div>
             </section>
 
-            <section></section>
+            <section className="py-16 px-8 bg-gray-100">
+                <div className="text-center">
+                    <p className="text-3xl font-bold mb-4">Why use ACAK LMS?</p>
+                    <p className="text-lg mb-4">Uvuvewwevwve</p>
+                    {/* <img src=Image URL here alt="LMS Features" className="w-full h-auto"/> */}
+                </div>
+            </section>
+
+            <section className="flex items-center justify-center py-12 bg-blue-50">
+                <p className="text-2xl font-semibold">
+                    Don’t have an account?{" "}
+                    <a href="#" className="text-blue-500 underline">
+                        Sign Up Now
+                    </a>{" "}
+                    <a href="#" className="text-blue-500 underline">
+                        Login
+                    </a>
+                </p>
+            </section>
         </MainLayout>
     );
 }

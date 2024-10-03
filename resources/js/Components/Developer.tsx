@@ -1,21 +1,27 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+
 interface DeveloperProps {
     image: string;
     name: string;
+    nim: string;
     role: string;
 }
 
-export default function Developer({ image, name, role }: DeveloperProps) {
+export default function Developer({ image, name, nim, role }: DeveloperProps) {
     return (
         <>
-            <div className="flex flex-col justify-center items-center space-x-4">
-                <img
-                    src={image}
-                    alt={name}
-                    className="rounded-full w-64 h-64 "
-                />
-                <h2>{name}</h2>
-                <p>{role}</p>
-            </div>
+            <Avatar>
+                <div className="flex flex-col justify-center items-center text-2xl">
+                    <AvatarImage
+                        className="rounded-full w-60 h-60"
+                        src={image}
+                    ></AvatarImage>
+                    <AvatarFallback>{name}</AvatarFallback>
+                    <p>{name}</p>
+                    <p>{nim}</p>
+                    <p>{role}</p>
+                </div>
+            </Avatar>
         </>
     );
 }

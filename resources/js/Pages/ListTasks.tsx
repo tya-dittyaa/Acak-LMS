@@ -1,23 +1,88 @@
 import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
-import { Dialog,
+import {
+    Dialog,
     DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger, } from "@/Components/ui/dialog";
+    DialogTrigger,
+} from "@/Components/ui/dialog";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
 import MainLayout from "@/Layouts/Main/MainLayout";
+import { useState, useEffect } from 'react';
+
+interface Task {
+    Task: string;
+    MemberName: string;
+    Priority: string;
+    Deadline: string;
+    CreatedAt?: string;
+    UpdatedAt?: string;
+    Action: string;
+}
 
 export default function ListTasks() {
+    const [today, setToday] = useState('');
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [newTask, setNewTask] = useState<Task>({
+        Task: '',
+        MemberName: '',
+        Priority: 'Low',
+        Deadline: '',
+        Action: 'Open',
+    });
+
+    useEffect(() => {
+        const date = new Date();
+        const formattedDate = date.toISOString().split('T')[0];
+        setToday(formattedDate);
+
+        fetch('http://localhost:1234/basic.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    setTasks(data);
+                }
+            })
+            .catch(error => console.error('Error fetching tasks:', error));
+    }, []);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setNewTask(prevTask => ({ ...prevTask, [id]: value }));
+    };
+
+    const handleSave = () => {
+        setTasks(prevTasks => [...prevTasks, newTask]);
+        setNewTask({
+            Task: '',
+            MemberName: '',
+            Priority: 'Low',
+            Deadline: today,
+            Action: 'Open',
+        });
+    };
+
+    const getPriorityClass = (priority: string) => {
+        switch (priority) {
+            case 'Low':
+                return 'bg-lime-400 text-black';
+            case 'Mid':
+                return 'bg-amber-400 text-black';
+            case 'High':
+                return 'bg-red-400 text-black';
+        }
+    };
+
     return (
         <MainLayout title="ListTasks">
             <div className="">
                 <div className="flex">
-                        <h1 className="text-3xl mb-5 font-bold">Walawe :b</h1>
+                    <h1 className="text-3xl mb-5 font-bold">Tasks</h1>
 
                     <div className="ml-auto">
                         <Dialog>
@@ -28,7 +93,6 @@ export default function ListTasks() {
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
                                     <DialogTitle>Add Task</DialogTitle>
-                                    
                                     <DialogDescription>
                                         Add your task here, whether your member, priority, etc.
                                     </DialogDescription>
@@ -36,29 +100,39 @@ export default function ListTasks() {
 
                                 <div className="grid gap-4 py-4">
                                     <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="subtask" className="text-right">
-                                            Subtask
+                                        <Label htmlFor="Task" className="text-right">
+                                            Task
                                         </Label>
-
-                                        <Input id="name" defaultValue="Pedro Duarte" className="col-span-3"/>
+                                        <Input id="Task" value={newTask.Task} onChange={handleInputChange} className="col-span-3" />
                                     </div>
                                     <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="username" className="text-right">
-                                            Username
+                                        <Label htmlFor="MemberName" className="text-right">
+                                            Member Name
                                         </Label>
-                                        
-                                        <Input id="username" defaultValue="@peduarte" className="col-span-3"/>
+                                        <Input id="MemberName" value={newTask.MemberName} onChange={handleInputChange} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="Priority" className="text-right">
+                                            Priority
+                                        </Label>
+                                        <Input id="Priority" value={newTask.Priority} onChange={handleInputChange} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="Deadline" className="text-right">
+                                            Deadline
+                                        </Label>
+                                        <Input id="Deadline" type="date" value={newTask.Deadline} onChange={handleInputChange} className="col-span-3" />
                                     </div>
                                 </div>
 
                                 <DialogFooter>
-                                    <Button type="submit">Save</Button>
+                                    <Button type="button" onClick={handleSave}>Save</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </div>
                 </div>
-                
+
                 <Table>
                     <TableCaption>A list of this project tasks</TableCaption>
                     <TableHeader className="bg-gray-200">
@@ -68,35 +142,27 @@ export default function ListTasks() {
                             <TableHead>Created At</TableHead>
                             <TableHead>Member</TableHead>
                             <TableHead>Updated At</TableHead>
-                            <TableHead className="text-center">Action</TableHead>
+                            <TableHead>Deadline</TableHead>
+                            <TableHead>Action</TableHead>
                         </TableRow>
                     </TableHeader>
 
                     <TableBody>
-                        <TableRow>
-                            <TableCell><Badge className="bg-lime-400 text-black" variant="outline">Low</Badge></TableCell>
-                            <TableCell>Test</TableCell>
-                            <TableCell>Test</TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell className="text-center">TEST</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell><Badge className="bg-amber-400 text-black" variant="outline">Mid</Badge></TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell>Test</TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell className="text-center">TEST</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell><Badge className="bg-red-400 text-black" variant="outline">High</Badge></TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell>Test</TableCell>
-                            <TableCell>TEST</TableCell>
-                            <TableCell className="text-center">TEST</TableCell>
-                        </TableRow>
+                        {tasks.map((task, index) => (
+                            <TableRow key={index}>
+                                <TableCell>
+                                    <Badge className={getPriorityClass(task.Priority)} variant="outline">
+                                        {task.Priority}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>{task.Task}</TableCell>
+                                <TableCell>{task.CreatedAt}</TableCell>
+                                <TableCell>{task.MemberName}</TableCell>
+                                <TableCell>{task.UpdatedAt}</TableCell>
+                                <TableCell>{task.Deadline}</TableCell>
+                                <TableCell>{task.Action}</TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </div>

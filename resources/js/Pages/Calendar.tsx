@@ -1,38 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "@/Layouts/Main/MainLayout";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 
 interface Task {
     id: number;
-    description: string;
-    deadline: Date;
+    Task: string;
+    Deadline: Date;
 }
 
 export default function CalendarFunc() {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [newTask, setNewTask] = useState<string>("");
 
-    const addTask = () => {
-        if (date && newTask) {
-            const newTaskObj = {
-                id: tasks.length + 1,
-                description: newTask,
-                deadline: date,
-            };
-            setTasks([...tasks, newTaskObj]);
-            setNewTask("");
-        }
-    };
+    useEffect(() => {
+        fetch('http://localhost:1234/basic.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    const tasksWithDates = data.map((task: any) => ({
+                        ...task,
+                        Deadline: new Date(task.Deadline),
+                    }));
+                    setTasks(tasksWithDates);
+                }
+            })
+            .catch(error => console.error('Error fetching tasks:', error));
+    }, []);
 
     const select = tasks.filter(
-        (task) => task.deadline.toDateString() === date?.toDateString()
+        (task) => task.Deadline.toDateString() === date?.toDateString()
     );
 
     const hasTaskOnDate = (day: Date) => {
         return tasks.some(
-            (task) => task.deadline.toDateString() === day.toDateString()
+            (task) => task.Deadline.toDateString() === day.toDateString()
         );
     };
 
@@ -52,22 +54,6 @@ export default function CalendarFunc() {
                     className="w-full max-w-lg shadow-lg rounded-lg p-4 bg-white"
                 />
 
-                <div className="mt-5 w-full max-w-lg flex space-x-2">
-                    <input
-                        type="text"
-                        value={newTask}
-                        onChange={(e) => setNewTask(e.target.value)}
-                        placeholder="Enter task description"
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <button
-                        onClick={addTask}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                    >
-                        Add Task
-                    </button>
-                </div>
-
                 <div className="mt-6 w-full max-w-lg">
                     <h2 className="text-lg font-semibold mb-3">
                         Tasks for {date?.toDateString()}
@@ -75,7 +61,7 @@ export default function CalendarFunc() {
                     {select.length > 0 ? (
                         <ul className="list-disc list-inside">
                             {select.map((task) => (
-                                <li key={task.id}>{task.description}</li>
+                                <li key={task.id}>{task.Task}</li>
                             ))}
                         </ul>
                     ) : (

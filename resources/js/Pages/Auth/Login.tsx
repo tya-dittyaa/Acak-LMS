@@ -1,24 +1,30 @@
-import { FormEventHandler } from 'react';
-import Checkbox from '@/Components/Checkbox';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
+import Checkbox from "@/Components/Checkbox";
+import InputError from "@/Components/InputError";
+import InputLabel from "@/Components/InputLabel";
+import PrimaryButton from "@/Components/PrimaryButton";
+import TextInput from "@/Components/TextInput";
+import GuestLayout from "@/Layouts/GuestLayout";
+import { Head, Link, useForm } from "@inertiajs/react";
+import { FormEventHandler } from "react";
 
-export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
+export default function Login({
+    status,
+    canResetPassword,
+}: {
+    status?: string;
+    canResetPassword: boolean;
+}) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
-        password: '',
+        email: "",
+        password: "",
         remember: false,
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route('login'), {
-            onFinish: () => reset('password'),
+        post(route("login"), {
+            onFinish: () => reset("password"),
         });
     };
 
@@ -26,7 +32,11 @@ export default function Login({ status, canResetPassword }: { status?: string, c
         <GuestLayout>
             <Head title="Log in" />
 
-            {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
+            {status && (
+                <div className="mb-4 font-medium text-sm text-green-600">
+                    {status}
+                </div>
+            )}
 
             <form onSubmit={submit}>
                 <div>
@@ -40,7 +50,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         className="mt-1 block w-full"
                         autoComplete="username"
                         isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
+                        onChange={(e) => setData("email", e.target.value)}
                     />
 
                     <InputError message={errors.email} className="mt-2" />
@@ -56,7 +66,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         value={data.password}
                         className="mt-1 block w-full"
                         autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
+                        onChange={(e) => setData("password", e.target.value)}
                     />
 
                     <InputError message={errors.password} className="mt-2" />
@@ -67,16 +77,20 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         <Checkbox
                             name="remember"
                             checked={data.remember}
-                            onChange={(e) => setData('remember', e.target.checked)}
+                            onChange={(e) =>
+                                setData("remember", e.target.checked)
+                            }
                         />
-                        <span className="ms-2 text-sm text-gray-600">Remember me</span>
+                        <span className="ms-2 text-sm text-gray-600">
+                            Remember me
+                        </span>
                     </label>
                 </div>
 
                 <div className="flex items-center justify-end mt-4">
                     {canResetPassword && (
                         <Link
-                            href={route('password.request')}
+                            href={route("password.request")}
                             className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Forgot your password?
@@ -86,6 +100,15 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     <PrimaryButton className="ms-4" disabled={processing}>
                         Log in
                     </PrimaryButton>
+                </div>
+
+                <div>
+                    <a href="auth/google/redirect" className="text-black">
+                        Login with Google
+                    </a>
+                    <a href="auth/github/redirect" className="text-black">
+                        Login with Github
+                    </a>
                 </div>
             </form>
         </GuestLayout>

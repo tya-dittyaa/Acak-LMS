@@ -11,7 +11,7 @@ export default function AcakLogo({ subtitle }: AcakLogoProps) {
                 href="/"
                 className="flex items-center gap-2 font-semibold md:text-base"
             >
-                <h1 className="text-2xl">ACAK</h1>
+                <h1 className="text-2xl">ACAKMAYA</h1>
             </a>
             <Separator orientation="vertical" />
             <h2>{subtitle}</h2>

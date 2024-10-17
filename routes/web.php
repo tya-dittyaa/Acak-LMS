@@ -5,6 +5,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use function Termwind\render;
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -24,6 +26,10 @@ Route::get('/dashboard', function () {
 
 Route::get('/home', function () {
     return Inertia::render('Home');
+});
+
+Route::get('/func', function() {
+    return Inertia::render('Func');
 });
 
 Route::middleware('auth')->group(function () {

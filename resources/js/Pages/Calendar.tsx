@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MainLayout from "@/Layouts/Main/MainLayout";
 import Calendar from "react-calendar";
-import 'react-calendar/dist/Calendar.css';
+import "react-calendar/dist/Calendar.css";
 
 interface Task {
     id: number;
@@ -14,9 +14,9 @@ export default function CalendarFunc() {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:1234/basic.php')
-            .then(response => response.json())
-            .then(data => {
+        fetch("http://localhost:1234/basic.php")
+            .then((response) => response.json())
+            .then((data) => {
                 if (!data.error) {
                     const tasksWithDates = data.map((task: any) => ({
                         ...task,
@@ -25,7 +25,7 @@ export default function CalendarFunc() {
                     setTasks(tasksWithDates);
                 }
             })
-            .catch(error => console.error('Error fetching tasks:', error));
+            .catch((error) => console.error("Error fetching tasks:", error));
     }, []);
 
     const select = tasks.filter(
@@ -51,7 +51,7 @@ export default function CalendarFunc() {
                             </div>
                         ) : null
                     }
-                    className="w-full max-w-lg shadow-lg rounded-lg p-4 bg-white"
+                    className="w-full max-w-lg shadow-lg rounded-lg p-4 dark:bg-gray-800 dark:text-black-200"
                 />
 
                 <div className="mt-6 w-full max-w-lg">

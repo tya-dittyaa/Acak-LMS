@@ -1,145 +1,244 @@
+import Developer from "@/Components/Developer";
 import MainLayout from "@/Layouts/Main/MainLayout";
-import Dev from "../Components/Developer";
-import { AditJPG, KarinaJPG, AntonyJPG, CharlesJPG } from "@/assets/Programmer";
-import { KanbanPNG } from "@/assets/Home";
+import {
+    IntroPNG,
+    ScalablePNG,
+    SecurePNG,
+    FlexiblePNG,
+    GIF1,
+    GIF2,
+    GIF3,
+} from "@/assets/Home";
+import { AntonyJPG, AditJPG, CharlesJPG, KarinaJPG } from "@/assets/Programmer";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { useEffect } from "react";
 
-export default function Home() {
+const Home = () => {
+    useEffect(() => {
+        const words = ["Partners", "Members", "People"];
+        let currentIndex = 0;
+
+        const changeWord = () => {
+            const wordElement = document.getElementById(
+                "changing-word"
+            ) as HTMLSpanElement;
+            wordElement.classList.remove("typing");
+            wordElement.textContent = "";
+
+            const word = words[currentIndex];
+            let i = 0;
+
+            wordElement.classList.add("typing");
+
+            const typingInterval = setInterval(() => {
+                wordElement.textContent += word[i];
+                i++;
+
+                if (i === word.length) {
+                    clearInterval(typingInterval);
+                    setTimeout(() => {
+                        currentIndex = (currentIndex + 1) % words.length;
+                        changeWord();
+                    }, 2000);
+                }
+            }, 100);
+        };
+
+        // changeWord();
+    }, []);
+
     return (
-        <MainLayout title="Home">
-            <section>
-                <div className="flex justify-center bg-gradient-to-r from-blue-800 to-cyan-500">
-                    <div className="flex flex-col justify-center w-full space-y-10 my-10">
-                        <div className="text-center text-5xl font-bold">
-                            <p>ACAK LMS</p>
-                            <p>Where Learning Meets Adventure</p>
-                        </div>
-
-                        <div className="text-center w-2/3 self-center text-3xl">
-                            <p>
-                                Whether you're learning solo or collaborating
-                                with a team, ACAK LMS helps you track your
-                                progress every step of the way. Organize tasks,
-                                set goals, and watch your learning journey
-                                unfold with the precision of a Kanban
-                                board—built to support your unique learning
-                                style.
+        <>
+            <style>{`
+        html {
+          scroll-behavior: smooth;
+        }
+      `}</style>
+            <MainLayout title="Home">
+                {/* Intro Section */}
+                <section className="flex flex-row justify-center items-center">
+                    <div className="flex flex-col justify-center space-y-16">
+                        <div className="flex flex-col justify-center">
+                            <p className="font-black text-7xl">
+                                Where your{" "}
+                                <span
+                                    id="changing-word"
+                                    className="typing text-blue-500"
+                                ></span>
+                            </p>{" "}
+                            <p className="font-black text-7xl">
+                                learn. How your
+                            </p>
+                            <p className="font-black text-7xl">
+                                progress results.
+                            </p>
+                            <br />
+                            <p className="text-xl">
+                                Empower your teams with ACAK LMS to deliver
+                                engaging learning experiences
+                            </p>
+                            <p className="text-xl">
+                                that drive performance, boost retention, and
+                                fuel growth. Unlock the potential of
+                            </p>
+                            <p className="text-xl">
+                                every learner with a platform designed for
+                                lasting impact.
                             </p>
                         </div>
 
-                        {/* <button className="bg-red-600 w-1/12 self-center">
-                            asd
-                        </button> */}
+                        <a
+                            href="#dash"
+                            className="w-3/5 bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg shadow-lg transform transition-all hover:bg-blue-600 hover:text-white duration-300 ease-in-out"
+                        >
+                            Login
+                        </a>
+                    </div>
 
-                        <div className="self-center w-3/5">
-                            <figure className="flex flex-row items-center justify-evenly">
-                                <img
-                                    className="bg-white rounded-full h-24 w-24"
-                                    src="https://cdn.sanity.io/images/nosafynr/openlms-production/916f12c04371f5715aeb49b3b09e2f6e7fb27497-50x50.svg"
-                                    alt=""
-                                />
-                                <img
-                                    className="bg-white rounded-full h-48 w-48"
-                                    src="https://cdn.sanity.io/images/nosafynr/openlms-production/547c14f220906e359a8a15584fa912e4d6bef390-50x50.svg"
-                                    alt=""
-                                />
-                                <img
-                                    className="rounded-full h-96 w-96"
-                                    src="https://cdn.sanity.io/images/nosafynr/openlms-production/4bcb982156ef74b223bc6f4b82772ed4f612cb89-400x400.png"
-                                    alt=""
-                                />
-                                <img
-                                    className="bg-white rounded-full h-48 w-48"
-                                    src="https://cdn.sanity.io/images/nosafynr/openlms-production/11ad98b31eedc751fac6d6873390ec3420724ab8-50x50.svg"
-                                    alt=""
-                                />
-                                <img
-                                    className="bg-white rounded-full h-24 w-24"
-                                    src="https://cdn.sanity.io/images/nosafynr/openlms-production/cba43db80d5f5236d1e44c4d9d9054d69533ed8b-50x50.svg"
-                                    alt=""
-                                />
-                            </figure>
+                    <div className="animate-slideUp">
+                        <img src={IntroPNG} alt="Intro" />
+                    </div>
+                </section>
+
+                {/* Offerings Directory */}
+                <section className="flex justify-center items-center mt-8 flex-col pt-10 pb-10">
+                    <p className="text-6xl font-black">Benefit Offerings</p>
+                    <div className="flex flex-row mt-16 space-x-24">
+                        <div className="flex flex-col items-center hover:scale-105 transition-transform duration-300 ease-in-out">
+                            <img
+                                src={ScalablePNG}
+                                alt="Scalability"
+                                className="w-96"
+                            />
+                            <p className="text-4xl font-black mt-7">
+                                Scalability
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center pl-36 hover:scale-105 transition-transform duration-300 ease-in-out">
+                            <img
+                                src={SecurePNG}
+                                alt="Security"
+                                className="w-7/12"
+                            />
+                            <p className="text-4xl font-black mt-7">Security</p>
+                        </div>
+                        <div className="flex flex-col items-center pl-4 hover:scale-105 transition-transform duration-300 ease-in-out">
+                            <img
+                                src={FlexiblePNG}
+                                alt="Flexibility"
+                                className="w-7/12"
+                            />
+                            <p className="text-4xl font-black mt-7">
+                                Flexibility
+                            </p>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section>
-                <div className="flex flex-col justify-center items-center">
-                    <p className="text-5xl mb-10">
-                        Learning platforms and services made by
-                    </p>
-                </div>
-                <div className="flex flex-row justify-evenly ">
-                    <Dev
-                        image={AntonyJPG}
-                        name={"Antony"}
-                        nim={"2602067773"}
-                        role={"AFK"}
-                    />
-                    <Dev
-                        image={AditJPG}
-                        name={"Adit"}
-                        nim={"2602113205"}
-                        role={"AFK"}
-                    />
-                    <Dev
-                        image={KarinaJPG}
-                        name={"Karina"}
-                        nim={"2602099680"}
-                        role={"AFK"}
-                    />
-                    <Dev
-                        image={CharlesJPG}
-                        name={"Charles"}
-                        nim={"2602117512"}
-                        role={"AFK"}
-                    />
-                </div>
-            </section>
-
-            <section className="flex py-16 px-8 bg-gradient-to-r from-cyan-500 to-blue-800 justify-center">
-                <div className="flex flex-row w-2/3 items-center justify-around">
-                    <div className="w-3/5">
-                        <p className="text-5xl font-bold mb-4 text-center">
-                            Why use ACAK LMS?
-                        </p>
-                        <p className="text-center text-xl">
-                            Manage and Support Learning Experiences for Multiple
-                            Organizations or Business Divisions Update, manage,
-                            and provide training content across organizations
-                            with a fully integrated multi-tenancy solution
-                            within your LMS. Open LMS WORK makes it easy to
-                            manage multiple training sites at once with secure,
-                            streamlined deployment, letting you deliver courses
-                            faster without sacrificing quality. Whether you need
-                            multi-tenancy hosting or segmented reporting, Open
-                            LMS WORK has you covered. Control your data with
-                            powerful reports that limit information to shared
-                            cohorts, shared courses, or shared profile field
-                            values. Rely on our built-in ecommerce options or
-                            opt into advanced alternatives via our extensive
-                            partner network.
+                {/* Developed By */}
+                <section className="mt-12">
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="text-6xl mb-10">
+                            Learning platforms and services made by
                         </p>
                     </div>
-                    <img
-                        src={KanbanPNG}
-                        alt="LMS Features"
-                        className="w-1/3 h-full"
-                    />
-                </div>
-            </section>
+                    <div className="flex flex-row justify-evenly ">
+                        <Developer
+                            image={AntonyJPG}
+                            name={"Antony"}
+                            nim={"2602067773"}
+                            role={"AFK"}
+                        />
+                        <Developer
+                            image={AditJPG}
+                            name={"Adit"}
+                            nim={"2602113205"}
+                            role={"AFK"}
+                        />
+                        <Developer
+                            image={KarinaJPG}
+                            name={"Karina"}
+                            nim={"2602099680"}
+                            role={"AFK"}
+                        />
+                        <Developer
+                            image={CharlesJPG}
+                            name={"Charles"}
+                            nim={"2602117512"}
+                            role={"AFK"}
+                        />
+                    </div>
+                </section>
 
-            <section className="flex items-center justify-center py-12 bg-blue-50">
-                <p className="text-2xl font-semibold">
-                    Don’t have an account?{" "}
-                    <a href="#" className="text-blue-500 underline">
-                        Sign Up Now
-                    </a>{" "}
-                    <a href="#" className="text-blue-500 underline">
-                        Login
-                    </a>
-                </p>
-            </section>
-        </MainLayout>
+                {/* NewsLetter Image Slider Section */}
+                <section className="mt-16 py-16">
+                    <div className="text-center mb-10">
+                        <p className="text-6xl font-bold">Our Latest Updates</p>
+                        <p className="text-2xl mt-4">
+                            Check out the latest from our platform!
+                        </p>
+                    </div>
+
+                    <Swiper
+                        spaceBetween={50}
+                        slidesPerView={1}
+                        autoplay={{
+                            delay: 3000,
+                            disableOnInteraction: false,
+                        }}
+                        navigation
+                        loop
+                        className="w-3/4 mx-auto"
+                    >
+                        <SwiperSlide>
+                            <div className="flex justify-center items-center space-x-8">
+                                <img
+                                    src={GIF1}
+                                    alt="News 1"
+                                    className="w-11/12 object-cover rounded-lg"
+                                />
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="flex justify-center items-center space-x-8">
+                                <img
+                                    src={GIF2}
+                                    alt="News 2"
+                                    className="w-11/12 object-cover rounded-lg"
+                                />
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="flex justify-center items-center space-x-8">
+                                <img
+                                    src={GIF3}
+                                    alt="News 3"
+                                    className="w-11/12 object-cover rounded-lg"
+                                />
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
+
+                    {/* Login Register Direct */}
+                    <section id="dash" className="mt-16">
+                        <div className="flex flex-col justify-center items-center bg-gradient-to-r from-blue-400 to-cyan-500 py-20 rounded-lg">
+                            <p className="text-4xl font-semibold mb-6 text-center">
+                                Start delivering learning that impacts what
+                                matters today.
+                            </p>
+                            <a
+                                href={"/dashboard"}
+                                className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg shadow-lg transform transition-all hover:bg-blue-600 hover:text-white duration-300 ease-in-out"
+                            >
+                                Go to Dashboard
+                            </a>
+                        </div>
+                    </section>
+                </section>
+            </MainLayout>
+        </>
     );
-}
+};
+
+export default Home;

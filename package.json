@@ -32,6 +32,7 @@
         "@radix-ui/react-separator": "^1.1.0",
         "@radix-ui/react-slot": "^1.1.0",
         "@radix-ui/react-tabs": "^1.1.0",
+        "@types/swipe": "^2.0.31",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "date-fns": "^3.6.0",
@@ -39,6 +40,7 @@
         "react-calendar": "^5.0.0",
         "react-day-picker": "^8.10.1",
         "recharts": "^2.12.7",
+        "swiper": "^11.1.15",
         "tailwind-merge": "^2.5.2",
         "tailwindcss-animate": "^1.0.7"
     }

@@ -12,9 +12,18 @@ import {
 import { AntonyJPG, AditJPG, CharlesJPG, KarinaJPG } from "@/assets/Programmer";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
+    // To ensure that we handle smooth scrolling properly and avoid page jumping
+    useEffect(() => {
+        // Smooth scrolling only during the first load
+        if (window.location.hash) {
+            // In case there's a hash in the URL, prevent scroll jump
+            window.scrollTo(0, 0);
+        }
+    }, []);
+
     useEffect(() => {
         const words = ["Partners", "Members", "People"];
         let currentIndex = 0;
@@ -45,16 +54,16 @@ const Home = () => {
             }, 100);
         };
 
-        // changeWord();
+        changeWord();
     }, []);
 
     return (
         <>
             <style>{`
-        html {
-          scroll-behavior: smooth;
-        }
-      `}</style>
+                html {
+                    scroll-behavior: smooth;
+                }
+            `}</style>
             <MainLayout title="Home">
                 {/* Intro Section */}
                 <section className="flex flex-row justify-center items-center">

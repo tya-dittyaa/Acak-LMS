@@ -15,11 +15,8 @@ import "swiper/css";
 import { useEffect, useState } from "react";
 
 const Home = () => {
-    // To ensure that we handle smooth scrolling properly and avoid page jumping
     useEffect(() => {
-        // Smooth scrolling only during the first load
         if (window.location.hash) {
-            // In case there's a hash in the URL, prevent scroll jump
             window.scrollTo(0, 0);
         }
     }, []);

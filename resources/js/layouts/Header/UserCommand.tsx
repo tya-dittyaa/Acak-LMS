@@ -20,6 +20,16 @@ interface CommandGroupData {
 
 const commandGroups: CommandGroupData[] = [
     {
+        groupName: "Dashboard",
+        items: [
+            {
+                emoji: "🏠",
+                pageName: "Dashboard Home",
+                pageRoute: "/dashboard",
+            },
+        ],
+    },
+    {
         groupName: "Settings",
         items: [
             {

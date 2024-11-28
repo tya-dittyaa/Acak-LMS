@@ -36,4 +36,6 @@ Route::get('/calendar', function () {
     return Inertia::render('Calendar');
 });
 
+Route::get('/tasks',[App\Http\Controllers\TasksController::class, 'list']);
+
 require __DIR__ . '/auth.php';

@@ -65,6 +65,14 @@ class ProfileController extends Controller
         // Delete socialite records
         DB::table('socialite')->where('user_id', $user->id)->delete();
 
+        // Delete user's avatar
+        if ($user->is_gdrive_avatar) {
+            $fileId = $this->driveService->getFileIdFromUrl($user->avatar);
+            if ($fileId) {
+                $this->driveService->deleteFile($fileId);
+            }
+        }
+
         Auth::logout();
 
         $user->delete();

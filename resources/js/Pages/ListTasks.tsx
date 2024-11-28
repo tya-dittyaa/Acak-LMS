@@ -16,6 +16,7 @@ import MainLayout from "@/Layouts/Main/MainLayout";
 import { useState, useEffect } from 'react';
 
 interface Task {
+    id: number;
     Task: string;
     MemberName: string;
     Priority: string;
@@ -26,46 +27,26 @@ interface Task {
 }
 
 export default function ListTasks() {
-    const [today, setToday] = useState('');
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [newTask, setNewTask] = useState<Task>({
-        Task: '',
-        MemberName: '',
-        Priority: 'Low',
-        Deadline: '',
-        Action: 'Open',
-    });
 
     useEffect(() => {
-        const date = new Date();
-        const formattedDate = date.toISOString().split('T')[0];
-        setToday(formattedDate);
-
-        fetch('http://localhost:1234/basic.php')
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    setTasks(data);
+        const fetchTasks = async () => {
+            try {
+                const response = await fetch("/tasks");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tasks");
                 }
-            })
-            .catch(error => console.error('Error fetching tasks:', error));
+                const data = await response.json();
+                setTasks(data);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
+
+        fetchTasks();
     }, []);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setNewTask(prevTask => ({ ...prevTask, [id]: value }));
-    };
 
-    const handleSave = () => {
-        setTasks(prevTasks => [...prevTasks, newTask]);
-        setNewTask({
-            Task: '',
-            MemberName: '',
-            Priority: 'Low',
-            Deadline: today,
-            Action: 'Open',
-        });
-    };
 
     const getPriorityClass = (priority: string) => {
         switch (priority) {
@@ -103,30 +84,30 @@ export default function ListTasks() {
                                         <Label htmlFor="Task" className="text-right">
                                             Task
                                         </Label>
-                                        <Input id="Task" value={newTask.Task} onChange={handleInputChange} className="col-span-3" />
+                                        <Input id="Task"  className="col-span-3" />
                                     </div>
                                     <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="MemberName" className="text-right">
                                             Member Name
                                         </Label>
-                                        <Input id="MemberName" value={newTask.MemberName} onChange={handleInputChange} className="col-span-3" />
+                                        <Input id="MemberName" className="col-span-3" />
                                     </div>
                                     <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="Priority" className="text-right">
                                             Priority
                                         </Label>
-                                        <Input id="Priority" value={newTask.Priority} onChange={handleInputChange} className="col-span-3" />
+                                        <Input id="Priority" className="col-span-3" />
                                     </div>
                                     <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="Deadline" className="text-right">
                                             Deadline
                                         </Label>
-                                        <Input id="Deadline" type="date" value={newTask.Deadline} onChange={handleInputChange} className="col-span-3" />
+                                        <Input id="Deadline" type="date" className="col-span-3" />
                                     </div>
                                 </div>
 
                                 <DialogFooter>
-                                    <Button type="button" onClick={handleSave}>Save</Button>
+                                    <Button type="button">Save</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -148,17 +129,21 @@ export default function ListTasks() {
                     </TableHeader>
 
                     <TableBody>
-                        {tasks.map((task, index) => (
-                            <TableRow key={index}>
+                        {tasks.map((task) => (
+                            <TableRow key={task.id}>
                                 <TableCell>
-                                    <Badge className={getPriorityClass(task.Priority)} variant="outline">
+                                    <Badge
+                                        className={`${getPriorityClass(
+                                            task.Priority
+                                        )}`}
+                                    >
                                         {task.Priority}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>{task.Task}</TableCell>
-                                <TableCell>{task.CreatedAt}</TableCell>
+                                <TableCell>{task.CreatedAt || "-"}</TableCell>
                                 <TableCell>{task.MemberName}</TableCell>
-                                <TableCell>{task.UpdatedAt}</TableCell>
+                                <TableCell>{task.UpdatedAt || "-"}</TableCell>
                                 <TableCell>{task.Deadline}</TableCell>
                                 <TableCell>{task.Action}</TableCell>
                             </TableRow>

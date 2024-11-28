@@ -4,6 +4,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\TasksController;
+use App\Http\Controllers\ActionController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PriorityController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -36,6 +40,7 @@ Route::get('/calendar', function () {
     return Inertia::render('Calendar');
 });
 
-Route::get('/tasks',[App\Http\Controllers\TasksController::class, 'list']);
+Route::get('/actions',[App\Http\Controllers\ActionController::class, 'index']);
+Route::get('/tasks',[App\Http\Controllers\TasksController::class, 'index']);
 
 require __DIR__ . '/auth.php';

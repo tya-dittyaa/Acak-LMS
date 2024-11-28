@@ -37,7 +37,7 @@ function CreateForm() {
     const insertPassword: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route("password.store"), {
+        post(route("password.create"), {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: (errors) => {

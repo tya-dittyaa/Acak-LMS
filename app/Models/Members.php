@@ -11,7 +11,11 @@ class Members extends Model
     protected $table = 'members';
     protected $primaryKey = 'MemberId';
     public $timestamps = false;
+    protected $fillable = [
+        'MemberId',
+        'MemberName'
+    ];
     public function membersTask(){
-        return $this->hasMany(Tasks::class);
+        return $this->hasMany(Tasks::class, 'MemberId', 'MemberId');
     }
 }

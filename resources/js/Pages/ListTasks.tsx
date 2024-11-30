@@ -18,44 +18,83 @@ import { useState, useEffect } from 'react';
 interface Task {
     id: number;
     Task: string;
-    MemberName: string;
-    Priority: string;
+    memberName: { MemberName: string };
+    priority: { Priority: string };
     Deadline: string;
     CreatedAt?: string;
     UpdatedAt?: string;
-    Action: string;
+    action: { Action: string };
 }
 
 export default function ListTasks() {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [newTask, setNewTask] = useState({
+        Task: "",
+        MemberName: "",
+        Priority: "",
+        Deadline: "",
+    });
 
     useEffect(() => {
         const fetchTasks = async () => {
+            setLoading(true);
             try {
                 const response = await fetch("/tasks");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch tasks");
-                }
+                if (!response.ok) throw new Error("Failed to fetch tasks");
                 const data = await response.json();
                 setTasks(data);
+                console.log(data);
+                setError(null);
             } catch (error) {
-                console.error("Error fetching tasks:", error);
+                setError("Unable to load tasks. Please try again later.");
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchTasks();
     }, []);
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setNewTask({ ...newTask, [id]: value });
+    };
 
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch("/tasks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newTask),
+            });
 
-    const getPriorityClass = (priority: string) => {
+            if (!response.ok) throw new Error("Failed to save task");
+
+            const savedTask = await response.json();
+            setTasks([...tasks, savedTask]);
+            setNewTask({ Task: "", MemberName: "", Priority: "", Deadline: "" });
+        } catch (error) {
+            setError("Failed to save task. Please try again.");
+        }
+    };
+
+    if (loading) return <div>Loading tasks...</div>;
+    if (error) return <div className="text-red-500">{error}</div>;
+
+    const getPriorityClass = (priority: string | null) => {
+        if (!priority) return "bg-gray-300 text-black";
+
         switch (priority) {
-            case 'Low':
-                return 'bg-lime-400 text-black';
-            case 'Mid':
-                return 'bg-amber-400 text-black';
-            case 'High':
-                return 'bg-red-400 text-black';
+            case "Low":
+                return "bg-lime-400 text-black";
+            case "Mid":
+                return "bg-amber-400 text-black";
+            case "High":
+                return "bg-red-400 text-black";
+            default:
+                return "bg-gray-300 text-black";
         }
     };
 
@@ -129,23 +168,19 @@ export default function ListTasks() {
                     </TableHeader>
 
                     <TableBody>
-                        {tasks.map((task) => (
-                            <TableRow key={task.id}>
+                        {tasks.map((task, index) => (
+                            <TableRow key={task.id || index}>
                                 <TableCell>
-                                    <Badge
-                                        className={`${getPriorityClass(
-                                            task.Priority
-                                        )}`}
-                                    >
-                                        {task.Priority}
+                                    <Badge className={`${getPriorityClass(task.priority?.Priority)}`}>
+                                        {task.priority?.Priority || "N/A"}
                                     </Badge>
                                 </TableCell>
-                                <TableCell>{task.Task}</TableCell>
+                                <TableCell>{task.Task || "N/A"}</TableCell>
                                 <TableCell>{task.CreatedAt || "-"}</TableCell>
-                                <TableCell>{task.MemberName}</TableCell>
+                                <TableCell>{task.memberName?.MemberName || "N/A"}</TableCell>
                                 <TableCell>{task.UpdatedAt || "-"}</TableCell>
-                                <TableCell>{task.Deadline}</TableCell>
-                                <TableCell>{task.Action}</TableCell>
+                                <TableCell>{task.Deadline || "-"}</TableCell>
+                                <TableCell>{task.action?.Action || "N/A"}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

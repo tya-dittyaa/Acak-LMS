@@ -11,6 +11,16 @@ class Tasks extends Model
     protected $table = 'tasks';
     protected $primaryKey = 'TaskId';
     public $timestamps = true;
+    public $fillable = [
+        'TaskId',
+        'Task',
+        'CreatedAt',
+        'MemberId',
+        'UpdatedAt',
+        'PriorityId',
+        'ActionId',
+        'Deadline'
+    ];
     public function action()
     {
         return $this->belongsTo(Actions::class, 'ActionId', 'ActionId');

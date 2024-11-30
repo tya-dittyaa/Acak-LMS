@@ -11,7 +11,11 @@ class Priority extends Model
     protected $table = 'priority';
     protected $primaryKey = 'PriorityId';
     public $timestamps = false;
+    protected $fillable = [
+        'PriorityId',
+        'Priority'
+    ];
     public function priorityTask(){
-        return $this->hasMany(Tasks::class);
+        return $this->hasMany(Tasks::class, 'PriorityId', 'PriorityId');
     }
 }

@@ -9,7 +9,7 @@ class TasksController extends Controller
 {
      public function index()
     {
-        $tasks = Tasks::all();
+        $tasks = Tasks::with(['member', 'priority', 'action'])->get();
 
         return response()->json($tasks);
     }

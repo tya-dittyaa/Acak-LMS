@@ -11,7 +11,11 @@ class Actions extends Model
     protected $table = 'actions';
     protected $primaryKey = 'ActionId';
     public $timestamps = false;
+    protected $fillable = [
+        'ActionId',
+        'Action'
+    ];
     public function tasksAction(){
-        return $this->hasMany(Tasks::class);
+        return $this->hasMany(Tasks::class, 'ActionId', 'ActionId');
     }
 }

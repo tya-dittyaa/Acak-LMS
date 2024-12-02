@@ -12,7 +12,7 @@ interface Props extends PageProps {
 export default function MainLayout(props: Props) {
     return (
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-            <div className="flex min-h-screen w-full flex-col">
+            <div className="flex min-h-dvh w-full flex-col">
                 <HeaderLayout auth={props.auth} title={props.title} />
                 <main
                     className={`flex flex-1 flex-col gap-4 bg-muted/40 ${

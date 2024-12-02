@@ -30,8 +30,8 @@ export default function AuthForm(props: authProps) {
                 onValueChange={handleTabChange}
                 className="w-full overflow-hidden"
             >
-                <div className="w-full px-8 lg:px-28 overflow-y-auto h-full">
-                    <Card className="w-full p-2 h-full overflow-y-auto">
+                <div className="w-full px-8 lg:px-28 overflow-y-auto min-h-dvh">
+                    <Card className="w-full p-2 min-h-dvh overflow-y-auto">
                         <CardHeader>
                             <TabsList className="grid w-full grid-cols-2">
                                 <TabsTrigger value="login">Login</TabsTrigger>

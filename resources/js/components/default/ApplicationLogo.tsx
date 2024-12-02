@@ -12,7 +12,7 @@ export default function ApplicationLogo(props: Props) {
             <a href="/" className="flex items-center gap-2 md:text-base">
                 <h1 className={cn("text-2xl", props.textClassName)}>
                     <span className="font-bold">ACAK</span>
-                    <span className="text-yellow-500">MAYA</span>
+                    <span className="text-blue-500">MAYA</span>
                 </h1>
             </a>
 

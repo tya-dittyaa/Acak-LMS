@@ -9,12 +9,12 @@ export default function AuthLayout({ children, useCard = false }: Props) {
     return (
         <div className="flex flex-col lg:flex-row min-h-dvh">
             {/* Left section */}
-            <div className="flex flex-auto h-[15vh] lg:h-dvh justify-center items-center bg-amber-100 lg:w-[40%]">
+            <div className="flex flex-auto h-[15dvh] lg:h-dvh justify-center items-center bg-amber-100 lg:w-[40%]">
                 <ApplicationLogo textClassName="text-4xl lg:text-6xl" />
             </div>
 
             {/* Right section */}
-            <div className="flex flex-col py-5 gap-5 h-[85vh] lg:h-dvh justify-center items-center lg:w-[60%] overflow-hidden">
+            <div className="flex flex-col py-5 gap-5 h-[85dvh] lg:h-dvh justify-center items-center lg:w-[60%] overflow-hidden">
                 <div className="flex flex-col">
                     <h1 className="font-extrabold text-2xl">
                         Welcome to professional

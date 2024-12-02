@@ -62,7 +62,7 @@ export default function Welcome({ auth }: Props) {
     return (
         <MainLayout auth={auth} title="Welcome" hasPadding>
             {/* Intro Section */}
-            <section className="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-16 px-4 md:px-8 lg:px-16 py-12 h-[91dvh]">
+            <section className="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-16 px-4 md:px-8 lg:px-16 py-12 lg:h-[91dvh]">
                 {/* Text Content */}
                 <div className="flex flex-col justify-center space-y-6 text-center md:text-left md:w-2/3">
                     <div>
@@ -204,7 +204,7 @@ export default function Welcome({ auth }: Props) {
             {/* Login Register Direct */}
             <section
                 id="dash"
-                className="py-20 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg"
+                className="my-5 py-20 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg"
             >
                 <div className="container mx-auto px-4 flex flex-col items-center">
                     <p className="text-2xl md:text-4xl font-semibold text-center mb-6">

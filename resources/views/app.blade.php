@@ -21,7 +21,7 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en">
     <meta property="og:url" content="https://acakmaya.dittyaa.my.id">
-    <meta property="og:image" content="{{ asset('img/AM.png') }}">
+    <meta property="og:image" content="{{ asset('img/logo/AM.png') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Acakmaya LMS is a professional learning management system platform.">

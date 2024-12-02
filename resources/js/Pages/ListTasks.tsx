@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 interface Task {
     id: number;
     Task: string;
-    memberName: { MemberName: string };
+    member: { MemberName: string };
     priority: { Priority: string };
     Deadline: string;
     CreatedAt?: string;
@@ -177,7 +177,7 @@ export default function ListTasks() {
                                 </TableCell>
                                 <TableCell>{task.Task || "N/A"}</TableCell>
                                 <TableCell>{task.CreatedAt || "-"}</TableCell>
-                                <TableCell>{task.memberName?.MemberName || "N/A"}</TableCell>
+                                <TableCell>{task.member?.MemberName || "N/A"}</TableCell>
                                 <TableCell>{task.UpdatedAt || "-"}</TableCell>
                                 <TableCell>{task.Deadline || "-"}</TableCell>
                                 <TableCell>{task.action?.Action || "N/A"}</TableCell>

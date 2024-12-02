@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MainLayout from "@/Layouts/Main/MainLayout";
 import Calendar from "react-calendar";
-import 'react-calendar/dist/Calendar.css';
+import "react-calendar/dist/Calendar.css";
 
 interface Task {
     id: number;
@@ -14,9 +14,9 @@ export default function CalendarFunc() {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:1234/basic.php')
-            .then(response => response.json())
-            .then(data => {
+        fetch("/tasks")
+            .then((response) => response.json())
+            .then((data) => {
                 if (!data.error) {
                     const tasksWithDates = data.map((task: any) => ({
                         ...task,
@@ -25,7 +25,7 @@ export default function CalendarFunc() {
                     setTasks(tasksWithDates);
                 }
             })
-            .catch(error => console.error('Error fetching tasks:', error));
+            .catch((error) => console.error("Error fetching tasks:", error));
     }, []);
 
     const select = tasks.filter(
@@ -40,7 +40,7 @@ export default function CalendarFunc() {
 
     return (
         <MainLayout title="Task Reminder Calendar">
-            <div className="w-full flex flex-col items-center justify-center">
+            <div className="w-full flex flex-row items-start justify-center space-x-6">
                 <Calendar
                     value={date}
                     onClickDay={setDate}
@@ -53,8 +53,8 @@ export default function CalendarFunc() {
                     }
                     className="w-full max-w-lg shadow-lg rounded-lg p-4 bg-white"
                 />
-
-                <div className="mt-6 w-full max-w-lg">
+                
+                <div className="w-full max-w-lg">
                     <h2 className="text-lg font-semibold mb-3">
                         Tasks for {date?.toDateString()}
                     </h2>

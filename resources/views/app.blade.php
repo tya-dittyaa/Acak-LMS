@@ -33,7 +33,7 @@
     @inertiaHead
 </head>
 
-<body class="font-sans antialiased min-h-screen bg-background">
+<body class="font-sans bg-background antialiased flex min-h-dvh w-full flex-col">
     @inertia
 </body>
 

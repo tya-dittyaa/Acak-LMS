@@ -150,7 +150,7 @@ export default function CalendarFunc() {
 
                 {/* Right Content */}
                 <div className="flex flex-col w-full lg:w-2/3">
-                    <div className="ml-10 w-full max-w">
+                    <div className="w-full max-w self-center">
                         {select.length > 0 ? (
                             <ul className="list-disc list-inside text-gray-800 dark:text-gray-100">
                                 {select.map((task) => (

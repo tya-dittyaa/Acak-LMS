@@ -24,6 +24,7 @@ interface Task {
     CreatedAt?: string;
     UpdatedAt?: string;
     action: { Action: string };
+    team: {Description: string};
 }
 
 export default function ListTasks() {

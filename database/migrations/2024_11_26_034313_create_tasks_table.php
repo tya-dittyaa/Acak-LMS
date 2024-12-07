@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('PriorityId');
             $table->unsignedBigInteger('ActionId');
             $table->string('Deadline');
+            $table->unsignedBigInteger('TeamId');
         });
     }
 

@@ -21,7 +21,8 @@ class TaskSeeder extends Seeder
             'UpdatedAt' => '2024-10-06 01:25:42',
             'PriorityId' => 1,
             'ActionId' => 1,
-            'Deadline' => '2025-10-10 09:00:00'
+            'Deadline' => '2025-10-10 09:00:00',
+            'TeamId' => 1
         ]);
     }
 }

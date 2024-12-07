@@ -19,7 +19,8 @@ class Tasks extends Model
         'UpdatedAt',
         'PriorityId',
         'ActionId',
-        'Deadline'
+        'Deadline',
+        'TeamId'
     ];
     public function action()
     {
@@ -28,7 +29,12 @@ class Tasks extends Model
 
     public function member()
     {
-        return $this->belongsTo(Members::class, 'MemberId', 'MemberId');
+        return $this->belongsTo(TeamDetails::class, 'MemberId', 'MemberId');
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(TeamDetails::class, 'TeamId', 'TeamId');
     }
 
     public function priority()

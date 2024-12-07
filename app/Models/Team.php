@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Members extends Model
+class Team extends Model
 {
     use HasFactory;
-    protected $table = 'members';
-    protected $primaryKey = 'MemberId';
+    protected $table = 'team';
+    protected $primaryKey = 'TeamId';
     public $timestamps = false;
     protected $fillable = [
-        'MemberId',
-        'MemberName',
-        'Email',
-        'Password',
-        'ProfilePicture'
+        'TeamId',
+        'Description',
+        'DueDate'
     ];
-    public function membersDetails(){
+    public function teamDetails(){
         return $this->hasMany(TeamDetails::class, 'MemberId', 'MemberId');
     }
 }

@@ -3,12 +3,24 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\TasksController;
+use App\Http\Controllers\ActionController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PriorityController;
 
 Route::get("/", function () {
     return Inertia::render("Welcome", [
         "canLogin" => Route::has("login"),
         "canRegister" => Route::has("register"),
     ]);
+});
+
+Route::get('/testing', function () {
+    return Inertia::render('Testing');
+});
+
+Route::get('/listTasks', function () {
+    return Inertia::render('ListTasks');
 });
 
 Route::get('/dashboard', function () {
@@ -23,8 +35,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
 });
 
-require __DIR__ . '/auth.php';
+Route::get('/calendar', function () {
+    return Inertia::render('Calendar');
+});
 
-Route::any('{catchall}', function () {
-    return Inertia::render('Error/404');
-})->where('catchall', '.*');
+Route::get('/actions',[App\Http\Controllers\ActionController::class, 'index']);
+Route::get('/tasks',[App\Http\Controllers\TasksController::class, 'index']);
+
+require __DIR__ . '/auth.php';

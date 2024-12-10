@@ -22,6 +22,10 @@ Route::get('/listTasks', function () {
     return Inertia::render('ListTasks');
 });
 
+Route::get('/listProjects', function () {
+    return Inertia::render('ListProjects');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

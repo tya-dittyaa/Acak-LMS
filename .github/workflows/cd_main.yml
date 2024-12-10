@@ -1,0 +1,30 @@
+name: CD-Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy Using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_PROD_HOST }}
+          username: ${{ secrets.SSH_PROD_USERNAME }}
+          password: ${{ secrets.SSH_PROD_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/apps/Acak-LMS
+            git reset --hard
+            git pull origin main
+            git status
+            docker compose build --no-cache acakmaya-lms
+            docker image prune -f
+            docker compose down acakmaya-lms
+            docker compose up -d acakmaya-lms

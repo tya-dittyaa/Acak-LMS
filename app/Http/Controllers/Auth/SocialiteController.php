@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Socialite as SocialiteModel;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -18,11 +19,18 @@ class SocialiteController extends Controller
 
   public function callback($provider)
   {
-    $socialUser = Socialite::driver($provider)->user();
-    $authUser = $this->store($socialUser, $provider);
-    Auth::login($authUser);
-    return redirect()->route('dashboard');
+    try {
+      $socialUser = Socialite::driver($provider)->user();
+
+      $authUser = $this->store($socialUser, $provider);
+      Auth::login($authUser);
+
+      return redirect()->route('dashboard');
+    } catch (Exception $e) {
+      return redirect()->route('login')->with('error', 'Failed to authenticate using ' . ucfirst($provider) . '. Please try again.');
+    }
   }
+
 
   private function store($socialUser, $provider)
   {

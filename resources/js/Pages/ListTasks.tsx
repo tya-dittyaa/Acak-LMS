@@ -65,13 +65,23 @@ export function DatePickerDemo() {
 interface Task {
     id: number;
     Task: string;
-    member: { MemberName: string };
+    member: { MemberId: number };
     priority: { Priority: string };
     Deadline: string;
     CreatedAt?: string;
     UpdatedAt?: string;
     action: { Action: string };
-    team: {Description: string};
+    team: {TeamId: number};
+}
+
+interface Member {
+    MemberId: number;
+    MemberName: string;
+}
+
+interface Team {
+    TeamId: number;
+    Description: string;
 }
 
 export default function ListTasks() {
@@ -90,11 +100,30 @@ export default function ListTasks() {
         const fetchTasks = async () => {
             setLoading(true);
             try {
-                const response = await fetch("/tasks");
-                if (!response.ok) throw new Error("Failed to fetch tasks");
-                const data = await response.json();
-                setTasks(data);
-                console.log(data);
+                const taskResponse = await fetch("/tasks");
+                if (!taskResponse.ok) throw new Error("Failed to fetch tasks");
+                const taskData: Task[] = await taskResponse.json();
+
+                const memberResponse = await fetch("/members");
+                if (!memberResponse.ok) throw new Error("Failed to fetch members");
+                const memberData: Member[] = await memberResponse.json();
+
+                const teamResponse = await fetch("/teams");
+                if (!teamResponse.ok) throw new Error("Failed to fetch teams");
+                const teamData: Team[] = await teamResponse.json();
+
+                const combinedData = taskData.map((task: Task) => ({
+                    ...task,
+                    MemberDescription: memberData.find(
+                        (member) => member.MemberId === task.member.MemberId
+                    )?.MemberName || "N/A",
+                    TeamDescription: teamData.find(
+                        (team) => team.TeamId === task.team.TeamId
+                    )?.Description || "N/A",
+                }));
+
+                setTasks(combinedData);
+                console.log(combinedData);
                 setError(null);
             } catch (error) {
                 setError("Unable to load tasks. Please try again later.");

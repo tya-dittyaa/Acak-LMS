@@ -7,6 +7,7 @@ use App\Http\Controllers\TasksController;
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\TeamController;
 
 Route::get("/", function () {
     return Inertia::render("Welcome", [
@@ -45,5 +46,7 @@ Route::get('/calendar', function () {
 
 Route::get('/actions',[App\Http\Controllers\ActionController::class, 'index']);
 Route::get('/tasks',[App\Http\Controllers\TasksController::class, 'index']);
+Route::get('/members',[App\Http\Controllers\MemberController::class, 'index']);
+Route::get('/teams',[App\Http\Controllers\TeamController::class, 'index']);
 
 require __DIR__ . '/auth.php';

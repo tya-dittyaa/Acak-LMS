@@ -9,7 +9,10 @@ import {
 import { UserAvatarSession } from "@/components/ui/user-avatar";
 import { LoginButton, LogoutButton } from "@/components/ui/user-button";
 import { PageProps } from "@/types";
+import UserChooseTeam from "./UserChooseTeam";
 import UserCommand from "./UserCommand";
+import UserCreateTeam from "./UserCreateTeam";
+import UserJoinTeam from "./UserJoinTeam";
 
 interface Props extends PageProps {}
 
@@ -32,7 +35,7 @@ function UserProfile({ auth }: PageProps) {
 }
 
 function SheetSidebar({ auth }: PageProps) {
-    const user = auth.user;
+    const { user, teams } = auth;
     return (
         <Sheet>
             <SheetTrigger>
@@ -40,6 +43,12 @@ function SheetSidebar({ auth }: PageProps) {
             </SheetTrigger>
             <SheetContent side="right" className="flex min-h-svh flex-col">
                 <UserProfile auth={auth} />
+                <Separator />
+                <div className="flex flex-col gap-2">
+                    {teams.length > 0 && <UserChooseTeam teams={teams} />}
+                    <UserCreateTeam />
+                    <UserJoinTeam />
+                </div>
                 <Separator />
                 <UserCommand />
                 <Separator />

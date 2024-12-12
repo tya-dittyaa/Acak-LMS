@@ -1,9 +1,17 @@
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
     email_verified_at?: string;
     avatar: string;
+}
+
+export interface UserTeam {
+    id: string;
+    name: string;
+    description?: string;
+    icon?: string;
+    role: string;
 }
 
 export type PageProps<
@@ -11,5 +19,6 @@ export type PageProps<
 > = T & {
     auth: {
         user: User;
+        teams: UserTeam[];
     };
 };

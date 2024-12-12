@@ -14,20 +14,48 @@ import { PageProps } from "@/types";
 import { Link } from "@inertiajs/react";
 import { MdErrorOutline } from "react-icons/md";
 
-interface Props extends PageProps {}
+interface Props extends PageProps {
+    status: number;
+}
 
-export default function Error404(props: Props) {
+export default function Error(props: Props) {
+    const { status, auth } = props;
+
+    const errorMessages: Record<
+        number,
+        { title: string; description: string }
+    > = {
+        404: {
+            title: "404: Page Not Found",
+            description:
+                "Sorry, the page you are looking for could not be found.",
+        },
+        500: {
+            title: "500: Server Error",
+            description: "Whoops, something went wrong on our servers.",
+        },
+        503: {
+            title: "503: Service Unavailable",
+            description:
+                "Sorry, we are doing some maintenance. Please check back soon.",
+        },
+    };
+
+    const { title, description } = errorMessages[status] || {
+        title: "Error",
+        description: "An unexpected error has occurred.",
+    };
+
     return (
-        <MainLayout auth={props.auth} title="404" hasPadding>
+        <MainLayout auth={auth} title={title} hasPadding>
             <div className="flex flex-col gap-4 md:gap-8">
                 <div className="flex flex-col gap-5">
                     <NotFoundPathBreadcrumb />
 
                     <div className="flex items-center gap-3">
                         <MdErrorOutline className="size-6 md:size-7" />
-
                         <h1 className="scroll-m-20 text-xl font-bold tracking-tight md:text-2xl">
-                            404 - Page Not Found
+                            {title}
                         </h1>
                     </div>
 
@@ -36,10 +64,8 @@ export default function Error404(props: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Error 404: Page Not Found</CardTitle>
-                        <CardDescription>
-                            Sorry, the page you are looking for cannot be found.
-                        </CardDescription>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <blockquote className="border-l-2 pl-6 italic">

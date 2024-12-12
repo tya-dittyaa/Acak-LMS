@@ -8,7 +8,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/Components/ui/dialog";
+} from "@/components/ui/dialog";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import {
@@ -322,46 +322,6 @@ export default function ListTasks() {
                             </TableCell>
                         </TableRow>
                          ))}
-                        <TableRow>
-                            <TableCell><Badge className="bg-amber-400 text-black rounded-xl" variant="outline">Mid</Badge></TableCell>
-                            <TableCell>Pembuatan List Tasks Page</TableCell>
-                            <TableCell>
-                            <div className="flex justify-center items-center gap-2">
-                                    <Avatar>
-                                        <AvatarImage className="size-9 rounded-full" src="https://i.pinimg.com/736x/60/eb/d1/60ebd1a8268d230c60d0bbf42aa7bd4f.jpg"/>
-                                        {/* <AvatarFallback>CN</AvatarFallback> */}
-                                    </Avatar>
-                                    <Avatar>
-                                        <AvatarImage className="size-9 rounded-full" src="https://i.pinimg.com/736x/2d/84/9c/2d849c195aa63fadd5f6bc7e387e5173.jpg"/>
-                                    </Avatar>
-                                    <Avatar>
-                                        <AvatarImage className="size-9 rounded-full" src="https://i.pinimg.com/736x/5c/6c/be/5c6cbe53b5c589077544fa8878ee194d.jpg"/>
-                                    </Avatar>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                            <div className="flex justify-center items-center gap-2">
-                                    <Avatar>
-                                        <AvatarImage className="size-9 rounded-full" src="https://i.pinimg.com/736x/ca/84/57/ca8457a0fb79de385747dc574ce0846d.jpg"/>
-                                    </Avatar>
-                                </div>
-                            </TableCell>
-                            <TableCell className="font-bold">{task.Deadline || "-"}</TableCell>
-                            <TableCell><Badge className="bg-yellow-100 text-yellow-700 rounded-xl" variant="secondary">In-Progress</Badge></TableCell>
-                            <TableCell>
-                                <div className="flex justify-center items-center gap-2">
-                                    <IconButton radius="large" size="3" color="green" variant="ghost">
-                                        <Check width="20" height="20"/>
-                                    </IconButton>
-                                    <IconButton radius="large" size="3" color="blue" variant="ghost">
-                                        <MagnifyingGlassIcon width="20" height="20"/>
-                                    </IconButton>
-                                    <IconButton radius="large" size="3" color="crimson" variant="ghost">
-                                        <Trash width="20" height="20"/>
-                                    </IconButton>
-                                </div>
-                            </TableCell>
-                        </TableRow>
                     </TableBody>
                 </Table>
             </div>

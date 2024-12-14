@@ -25,6 +25,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Acakmaya LMS is a professional learning management system platform.">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Scripts -->
     @routes

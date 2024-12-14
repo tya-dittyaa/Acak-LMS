@@ -13,4 +13,30 @@ class TasksController extends Controller
 
         return response()->json($tasks);
     }
+
+    public function store(){
+        $validatedData = $request->validate([
+            'Task' => 'required|string|max:255',
+            'CreatedAt' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            'MemberId' => 'required|integer',
+            'UpdatedAt' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            'PriorityId' => 'required|integer',
+            'ActionId' => 'required|integer',
+            'Deadline' => 'required|date_format:Y-m-d',
+            'TeamId' => 'required|integer',
+        ]);
+
+        $task = Task::create([
+            'Task' => $validatedData['Task'],
+            'CreatedAt' => $validatedData['CreatedAt'],
+            'MemberId' => (int)$validatedData['MemberId'],
+            'UpdatedAt' => $validatedData['UpdatedAt'],
+            'PriorityId' => (int)$validatedData['PriorityId'],
+            'ActionId' => (int)$validatedData['ActionId'],
+            'Deadline' => $validatedData['Deadline'],
+            'TeamId' => (int)$validatedData['TeamId'],
+        ]);
+
+        return response()->json($task, 201);
+    }
 }

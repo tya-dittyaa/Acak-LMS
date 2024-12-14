@@ -31,8 +31,12 @@ import { Calendar } from "@/Components/ui/calendar";
 import { Textarea } from "@/Components/ui/textarea";
 import { useState, useEffect } from 'react';
 
-export function DatePickerDemo() {
-    const [date, setDate] = React.useState<Date>()
+interface DatePickerDemoProps {
+    date: Date | undefined;
+    setDate: (value: Date | undefined) => void;
+}
+
+export function DatePickerDemo({ date, setDate }: DatePickerDemoProps) {
    
     return (
       <Popover>
@@ -84,17 +88,35 @@ interface Team {
     Description: string;
 }
 
+interface TeamDetails {
+    TeamId: number;
+    MemberId: number;
+}
+
+interface Priority {
+    PriorityId: number;
+    Priority: string;
+}
+
 export default function ListTasks() {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [membersInTeam, setMembersInTeam] = useState<Member[]>([]);
+    const [priorityName, setPriority] = useState<Priority[]>([]);
+    const TeamId = 1; 
     const [newTask, setNewTask] = useState({
         Task: "",
-        MemberName: "",
-        Priority: "",
+        CreatedAt: new Date(),
+        MemberId: "",
+        UpdatedAt: new Date(),
+        PriorityId: "",
+        ActionId: 1,
         Deadline: "",
+        TeamId: TeamId
     });
+
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -112,6 +134,26 @@ export default function ListTasks() {
                 if (!teamResponse.ok) throw new Error("Failed to fetch teams");
                 const teamData: Team[] = await teamResponse.json();
 
+                const teamDetailsResponse = await fetch("/teamDetails");
+                if(!teamDetailsResponse.ok) throw new Error("Failed to fetch team details");
+                const teamDetailsData: TeamDetails[] = await teamDetailsResponse.json();
+
+                const filteredTeamDetails = teamDetailsData.filter(
+                    (teamDetail) => teamDetail.TeamId === TeamId
+                );
+
+                const membersInTeam = filteredTeamDetails.map((teamDetail) => {
+                    const member = memberData.find((m) => m.MemberId === teamDetail.MemberId);
+                    return member ? { MemberId: member.MemberId, MemberName: member.MemberName } : null;
+                }).filter(Boolean) as Member[];
+
+                setMembersInTeam(membersInTeam);
+
+                const priorityResponse = await fetch("/priority");
+                if (!priorityResponse.ok) throw new Error("Failed to fetch team details");
+                const priorityData: Priority[] = await priorityResponse.json();
+                setPriority(priorityData);
+
                 const combinedData = taskData.map((task: Task) => ({
                     ...task,
                     MemberDescription: memberData.find(
@@ -123,7 +165,7 @@ export default function ListTasks() {
                 }));
 
                 setTasks(combinedData);
-                console.log(combinedData);
+                // console.log(membersInTeam);
                 setError(null);
             } catch (error) {
                 setError("Unable to load tasks. Please try again later.");
@@ -135,28 +177,61 @@ export default function ListTasks() {
         fetchTasks();
     }, []);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
+        setNewTask({ ...newTask, [id]: value });
+    };
+
+    const handleSelectChange = (id: string, value: string) => {
         setNewTask({ ...newTask, [id]: value });
     };
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch("/tasks", {
+            const metaElement = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = metaElement ? metaElement.getAttribute('content') : null;
+
+            if (!csrfToken) {
+                throw new Error("CSRF token not found");
+            }
+            console.log("Submitting task:", JSON.stringify(newTask, null, 2));
+
+            console.log(newTask);
+            console.log(csrfToken);
+
+            const response = await fetch("/addTasks", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
                 body: JSON.stringify(newTask),
             });
 
             if (!response.ok) throw new Error("Failed to save task");
 
             const savedTask = await response.json();
+            console.log("Server Response:", savedTask);
+            if (!response.ok) throw new Error(savedTask.message || "Failed to save task");
             setTasks([...tasks, savedTask]);
-            setNewTask({ Task: "", MemberName: "", Priority: "", Deadline: "" });
+            setNewTask({
+                Task: "",
+                CreatedAt: new Date(),
+                MemberId: "",
+                UpdatedAt: new Date(),
+                PriorityId: "",
+                ActionId: 1,
+                Deadline: "",
+                TeamId: TeamId,
+            });
+            setError(null);
         } catch (error) {
+            console.error(error);
             setError("Failed to save task. Please try again.");
         }
     };
+
+
 
     if (loading) return <div>Loading tasks...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
@@ -185,7 +260,7 @@ export default function ListTasks() {
                         <h1 className="text-3xl font-bold">Web Programming</h1>
                         <div className="flex flex-row">
                             <h2 className="mr-2 italic">Due Date: </h2>
-                            <h2 className="mb-5 font-bold italic text-red-400">   31 December 2024</h2>
+                            <h2 className="mb-5 font-bold italic text-red-400">31 December 2024</h2>
                         </div>
                         <div className="w-25">
                             <p className="text-gray-500 mb-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vitae nunc vel consectetur adipiscing elit. Proin vitae nunc vel consectetur nibh tempor placerat. Maecenas scelerisque laoreet mauris, at sollicitudin turpis. Etiam suscipit felis felis, sit amet varius diam dignissim et. Nullam molestie ligula eu ipsum consectetur posuere. Etiam congue sapien a dolor rutrum, eu maximus ligula sollicitudin. Mauris nec rutrum ante. Sed </p>
@@ -211,8 +286,12 @@ export default function ListTasks() {
                                         <Label htmlFor="description" className="text-right">
                                             Description
                                         </Label>
-
-                                        <Textarea className="w-[280px]"></Textarea>
+                                        <Textarea
+                                            id="Task"
+                                            value={newTask.Task}
+                                            onChange={handleInputChange}
+                                            className="w-[280px]"
+                                        />
                                     </div>
 
                                     <div className="grid grid-cols-4 items-center gap-4">
@@ -220,15 +299,17 @@ export default function ListTasks() {
                                             Priority
                                         </Label>
                                         
-                                        <Select>
+                                        <Select onValueChange={(value) => handleSelectChange("PriorityId", value)}>
                                         <SelectTrigger className="w-[280px]">
                                             <SelectValue placeholder="" />
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="0">Low</SelectItem>
-                                            <SelectItem value="1">Mid</SelectItem>
-                                            <SelectItem value="2">High</SelectItem>
-                                        </SelectContent>
+                                            <SelectContent>
+                                                {priorityName.map((priority) => (
+                                                    <SelectItem key={priority.PriorityId} value={String(priority.PriorityId)}>
+                                                        {priority.Priority}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
                                         </Select>
                                     </div>
 
@@ -237,40 +318,17 @@ export default function ListTasks() {
                                             Assigned To
                                         </Label>
                                         
-                                        <Select>
+                                        <Select onValueChange={(value) => handleSelectChange("MemberId", value)}>
                                         <SelectTrigger className="w-[280px]">
                                             <SelectValue placeholder="" />
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="0">Karina</SelectItem>
-                                            <SelectItem value="1">Dwinovera</SelectItem>
-                                            <SelectItem value="2">Mulia</SelectItem>
-                                        </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="assignedby" className="text-right">
-                                            Assigned By
-                                        </Label>
-                                        
-                                        <Input className="w-[280px]" disabled type="name" placeholder="Karina" />
-                                    </div>
-
-                                    <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="status" className="text-right">
-                                            Status
-                                        </Label>
-                                        
-                                        <Select>
-                                        <SelectTrigger className="w-[280px]">
-                                            <SelectValue placeholder="" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="0">Completed</SelectItem>
-                                            <SelectItem value="1">In-Progress</SelectItem>
-                                            <SelectItem value="2">Pending</SelectItem>
-                                        </SelectContent>
+                                            <SelectContent>
+                                                {membersInTeam.map((member) => (
+                                                    <SelectItem key={member.MemberId} value={String(member.MemberId)}>
+                                                        {member.MemberName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
                                         </Select>
                                     </div>
 
@@ -278,17 +336,20 @@ export default function ListTasks() {
                                         <Label htmlFor="username" className="text-right">
                                             Due Date
                                         </Label>
-                                        {/* <Input id="duedate" className="col-span-3"/> */}
 
-                                        <DatePickerDemo></DatePickerDemo>
-
+                                        <DatePickerDemo
+                                            date={newTask.Deadline ? new Date(newTask.Deadline) : undefined}
+                                            setDate={(value) =>
+                                                setNewTask({ ...newTask, Deadline: value ? format(value, "yyyy-MM-dd") : "" })
+                                            }
+                                        />
 
                                     </div>
                                     
                                 </div>
 
                                 <DialogFooter>
-                                    <Button type="button">Save</Button>
+                                    <Button type="button" onClick={handleSubmit}>Save</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -323,7 +384,6 @@ export default function ListTasks() {
                                 <div className="flex justify-center items-center gap-2">
                                     <Avatar>
                                         <AvatarImage className="size-9 rounded-full" src="https://i.pinimg.com/736x/60/eb/d1/60ebd1a8268d230c60d0bbf42aa7bd4f.jpg"/>
-                                        {/* <AvatarFallback>CN</AvatarFallback> */}
                                     </Avatar>
                                 </div>
                             </TableCell>

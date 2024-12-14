@@ -11,8 +11,7 @@ class Tasks extends Model
     protected $table = 'tasks';
     protected $primaryKey = 'TaskId';
     public $timestamps = true;
-    public $fillable = [
-        'TaskId',
+    protected $fillable = [
         'Task',
         'CreatedAt',
         'MemberId',
@@ -20,7 +19,7 @@ class Tasks extends Model
         'PriorityId',
         'ActionId',
         'Deadline',
-        'TeamId'
+        'TeamId',
     ];
     public function action()
     {

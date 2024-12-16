@@ -84,6 +84,7 @@ class TeamController extends Controller
         $teamMapping->teams_id = $team->id;
         $teamMapping->member_id = $request->user()->id;
         $teamMapping->role_id = $ownerRoleId;
+        $teamMapping->joined_at = now();
         $teamMapping->save();
 
         // Upload Team Icon

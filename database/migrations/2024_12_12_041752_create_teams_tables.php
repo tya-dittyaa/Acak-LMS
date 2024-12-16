@@ -32,7 +32,7 @@ return new class extends Migration
             $table->uuid('teams_id');
             $table->uuid('member_id');
             $table->uuid('role_id');
-            $table->timestamp('joined_at')->useCurrent();
+            $table->timestamp('joined_at');
             $table->timestamps();
 
             $table->foreign('teams_id')->references('id')->on('teams')->cascadeOnDelete();

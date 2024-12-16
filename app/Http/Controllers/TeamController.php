@@ -18,6 +18,28 @@ class TeamController extends Controller
         $this->driveService = $driveService;
     }
 
+    private function generateTeamCode()
+    {
+        do {
+            $code = $this->randomTeamCode();
+        } while (Team::where('code', $code)->exists());
+
+        return $code;
+    }
+
+    private function randomTeamCode(): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $length = 8;
+        $code = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        return $code;
+    }
+
     // Create a new team
     public function store(Request $request)
     {
@@ -51,6 +73,7 @@ class TeamController extends Controller
         $team = new Team();
         $team->name = $request->name;
         $team->description = $request->description;
+        $team->code = $this->generateTeamCode();
         $team->save();
 
         // Get Owner Role ID

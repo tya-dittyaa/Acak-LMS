@@ -15,6 +15,7 @@ class TeamRolesSeeder extends Seeder
         $roles = [
             ['name' => 'Owner'],
             ['name' => 'Member'],
+            ['name' => 'Guest']
         ];
 
         foreach ($roles as $role) {

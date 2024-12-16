@@ -33,7 +33,7 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
-        const teams = props.initialPage.props.auth.teams;
+        const teams = props.initialPage?.props?.auth?.teams || [];
 
         root.render(
             <ToastWrapper>

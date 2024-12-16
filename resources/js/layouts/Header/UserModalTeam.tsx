@@ -22,6 +22,7 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoCreateOutline } from "react-icons/io5";
 import { useMediaQuery } from "usehooks-ts";
+import JoinTeamForm from "./UserApplyTeam";
 import CreateTeamForm from "./UserCreateTeam";
 
 function TeamTabs({ setOpen }: { setOpen: (open: boolean) => void }) {
@@ -34,6 +35,7 @@ function TeamTabs({ setOpen }: { setOpen: (open: boolean) => void }) {
             >
                 <TabsNavigation />
                 <Separator />
+                <JoinTeamForm setOpen={setOpen} />
             </TabPanel>
             <TabPanel
                 value="create"

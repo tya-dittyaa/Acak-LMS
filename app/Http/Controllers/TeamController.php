@@ -8,6 +8,8 @@ use App\Models\TeamRole;
 use App\Services\DriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class TeamController extends Controller
 {
@@ -107,5 +109,66 @@ class TeamController extends Controller
 
         // Redirect back with success message
         return redirect()->back()->with('status', 'Team created successfully.');
+    }
+
+    // Join a team
+    public function join(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'team_code' => ['required', 'string', 'min:8', 'max:8', 'exists:teams,code'],
+        ], [
+            'team_code.required' => 'The team code is required.',
+            'team_code.string' => 'The team code must be a valid string.',
+            'team_code.min' => 'The team code must be exactly 8 characters.',
+            'team_code.max' => 'The team code must be exactly 8 characters.',
+            'team_code.exists' => 'No team found with the provided code.',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        // Check if the team exists
+        $team = Team::where('code', $request->team_code)->first();
+
+        if (!$team) {
+            return redirect()->back()->withErrors(['team_code' => 'No team found with the provided code.']);
+        }
+
+        // Check if the user is already assigned a role other than 'Guest' in the team
+        $existingRole = TeamMapping::where('teams_id', $team->id)
+            ->where('member_id', $request->user()->id)
+            ->whereNotIn('role_id', [
+                TeamRole::where('name', 'Guest')->first()->id, // Exclude Guest role
+            ])
+            ->exists();
+
+        if ($existingRole) {
+            return redirect()->back()->withErrors(['team_code' => 'You have already joined the team.']);
+        }
+
+        // Check if the user has already applied with the 'Guest' role
+        $existingApplication = TeamMapping::where('teams_id', $team->id)
+            ->where('member_id', $request->user()->id)
+            ->where('role_id', TeamRole::where('name', 'Guest')->first()->id)
+            ->first();
+
+        if ($existingApplication) {
+            return redirect()->back()->withErrors(['team_code' => 'You have already applied to this team, please wait for the team owner to review your application.']);
+        }
+
+        // Assign the Guest role to the user when they apply
+        $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
+
+        // Create the team mapping (apply to the team)
+        $teamMapping = new TeamMapping();
+        $teamMapping->teams_id = $team->id;
+        $teamMapping->member_id = $request->user()->id;
+        $teamMapping->role_id = $guestRoleId; // Assign Guest role
+        $teamMapping->save();
+
+        // Respond with success message
+        return redirect()->back()->with('status', 'Your application to join the team has been successfully sent. The team owner will review it.');
     }
 }

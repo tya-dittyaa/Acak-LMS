@@ -1,41 +1,32 @@
 import InputError from "@/components/default/InputError";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
-import { FormEventHandler, useRef, useState } from "react";
-import { IoCreateOutline } from "react-icons/io5";
+import { useRef } from "react";
 import { toast } from "react-toastify";
-import { useMediaQuery } from "usehooks-ts";
 
-function AddTeamForm({
+interface CreateTeamFormProps {
+    setOpen: (open: boolean) => void;
+    className?: string;
+}
+
+interface ICreateTeam {
+    name: string;
+    description: string | null;
+    icon: File | null;
+}
+
+const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
     setOpen,
     className,
-}: React.ComponentProps<"form"> & { setOpen: (open: boolean) => void }) {
-    const nameInput = useRef<HTMLInputElement>(null);
-    const descriptionInput = useRef<HTMLTextAreaElement>(null);
-    const iconInput = useRef<HTMLInputElement>(null);
+}) => {
+    const nameInputRef = useRef<HTMLInputElement>(null);
+    const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
+    const iconInputRef = useRef<HTMLInputElement>(null);
 
     const { setData, errors, post, reset, processing } = useForm<ICreateTeam>({
         name: "",
@@ -43,7 +34,7 @@ function AddTeamForm({
         icon: null,
     });
 
-    const onSubmit: FormEventHandler = (e) => {
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
 
         post(route("teams.store"), {
@@ -51,22 +42,27 @@ function AddTeamForm({
             onSuccess: () => {
                 toast.success("Team created successfully");
                 reset();
-                nameInput.current?.focus();
-                descriptionInput.current?.focus();
-                iconInput.current?.focus();
+                focusInputs();
                 setOpen(false);
             },
-            onError: (errors) => {
-                toast.error(errors.message);
+            onError: (error) => {
+                toast.error(error.message || "An error occurred");
             },
         });
     };
 
+    const focusInputs = () => {
+        nameInputRef.current?.focus();
+        descriptionInputRef.current?.focus();
+        iconInputRef.current?.focus();
+    };
+
     return (
         <form
-            onSubmit={onSubmit}
+            onSubmit={handleSubmit}
             className={cn("grid items-start gap-4", className)}
         >
+            {/* Name Field */}
             <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -74,41 +70,48 @@ function AddTeamForm({
                     id="name"
                     required
                     autoComplete="name"
-                    ref={nameInput}
+                    ref={nameInputRef}
                     onChange={(e) => setData("name", e.target.value)}
                 />
                 <InputError message={errors.name} />
             </div>
 
+            {/* Description Field */}
             <div className="grid gap-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                     id="description"
                     autoComplete="description"
-                    ref={descriptionInput}
+                    ref={descriptionInputRef}
                     onChange={(e) => setData("description", e.target.value)}
                 />
                 <InputError message={errors.description} />
             </div>
 
+            {/* Icon Field */}
             <div className="grid gap-2">
                 <Label htmlFor="icon">Icon</Label>
                 <Input
                     type="file"
                     id="icon"
-                    ref={iconInput}
+                    ref={iconInputRef}
                     onChange={(e) => {
-                        const file = e.target.files?.[0] ?? null;
+                        const file = e.target.files?.[0] || null;
                         setData("icon", file);
                     }}
                 />
                 <InputError message={errors.icon} />
             </div>
 
-            <Button type="submit" disabled={processing}>
+            {/* Submit Button */}
+            <Button
+                type="submit"
+                disabled={processing}
+                className="flex items-center justify-center"
+            >
                 {processing ? (
                     <>
-                        <Loader2 className="animate-spin" />
+                        <Loader2 className="animate-spin mr-2" />
                         Creating...
                     </>
                 ) : (
@@ -117,56 +120,6 @@ function AddTeamForm({
             </Button>
         </form>
     );
-}
+};
 
-export default function UserCreateTeam() {
-    const [open, setOpen] = useState(false);
-    const isDesktop = useMediaQuery("(min-width: 768px)");
-
-    if (isDesktop) {
-        return (
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button className="w-full gap-4 justify-center items-center">
-                        <IoCreateOutline />
-                        Create Team
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Create New Team</DialogTitle>
-                        <DialogDescription>
-                            Fill in the form below to create a new team
-                        </DialogDescription>
-                    </DialogHeader>
-                    <AddTeamForm setOpen={setOpen} />
-                </DialogContent>
-            </Dialog>
-        );
-    }
-
-    return (
-        <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerTrigger asChild>
-                <Button className="w-full gap-4 justify-center items-center">
-                    <IoCreateOutline />
-                    Create Team
-                </Button>
-            </DrawerTrigger>
-            <DrawerContent>
-                <DrawerHeader className="text-left">
-                    <DrawerTitle>Create New Team</DrawerTitle>
-                    <DrawerDescription>
-                        Fill in the form below to create a new team
-                    </DrawerDescription>
-                </DrawerHeader>
-                <AddTeamForm className="px-4" setOpen={setOpen} />
-                <DrawerFooter className="pt-2">
-                    <DrawerClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                    </DrawerClose>
-                </DrawerFooter>
-            </DrawerContent>
-        </Drawer>
-    );
-}
+export default CreateTeamForm;

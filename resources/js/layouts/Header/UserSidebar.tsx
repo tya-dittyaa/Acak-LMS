@@ -11,8 +11,7 @@ import { LoginButton, LogoutButton } from "@/components/ui/user-button";
 import { PageProps } from "@/types";
 import UserChooseTeam from "./UserChooseTeam";
 import UserCommand from "./UserCommand";
-import UserCreateTeam from "./UserCreateTeam";
-import UserJoinTeam from "./UserJoinTeam";
+import UserModalTeam from "./UserModalTeam";
 
 interface Props extends PageProps {}
 
@@ -44,10 +43,9 @@ function SheetSidebar({ auth }: PageProps) {
             <SheetContent side="right" className="flex min-h-svh flex-col">
                 <UserProfile auth={auth} />
                 <Separator />
-                <div className="flex flex-col gap-2">
-                    {teams.length > 0 && <UserChooseTeam teams={teams} />}
-                    <UserCreateTeam />
-                    <UserJoinTeam />
+                <div className="flex flex-col gap-3">
+                    <UserChooseTeam teams={teams} />
+                    <UserModalTeam />
                 </div>
                 <Separator />
                 <UserCommand />

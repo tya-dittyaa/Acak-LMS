@@ -38,18 +38,13 @@ class TeamController extends Controller
             'icon.mimes' => 'The icon must be a file of type: png, jpg, jpeg.',
         ]);
 
-        // Get User
-        $user = $request->user();
-
-        // Check Team Name Availability (Join with TeamsMapping)
-        $checkTeam = DB::table("teams")
-            ->join("teams_mapping", "teams.id", "=", "teams_mapping.teams_id")
-            ->where("teams.name", $request->name)
-            ->where("teams_mapping.member_id", $user->id)
+        // Check if the Team Name Exists Globally
+        $checkGlobalTeamName = DB::table("teams")
+            ->where("name", $request->name)
             ->exists();
 
-        if ($checkTeam) {
-            return redirect()->back()->withErrors(['name' => 'The team name is already created by you.']);
+        if ($checkGlobalTeamName) {
+            return redirect()->back()->withErrors(['name' => 'This team name is already in use. Please choose another name.']);
         }
 
         // Create Team
@@ -64,7 +59,7 @@ class TeamController extends Controller
         // Create Team Mapping
         $teamMapping = new TeamMapping();
         $teamMapping->teams_id = $team->id;
-        $teamMapping->member_id = $user->id;
+        $teamMapping->member_id = $request->user()->id;
         $teamMapping->role_id = $ownerRoleId;
         $teamMapping->save();
 

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { VscGitStashApply } from "react-icons/vsc";
 
 interface JoinTeamFormProps {
     setOpen: (open: boolean) => void;
@@ -76,7 +77,10 @@ const JoinTeamForm: React.FC<JoinTeamFormProps> = ({ setOpen, className }) => {
                         Sending Request...
                     </>
                 ) : (
-                    "Apply to Join"
+                    <>
+                        <VscGitStashApply />
+                        Apply to Join
+                    </>
                 )}
             </Button>
         </form>

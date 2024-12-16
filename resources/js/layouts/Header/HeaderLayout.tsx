@@ -10,7 +10,7 @@ interface Props extends PageProps {
 
 export default function HeaderLayout(props: Props) {
     return (
-        <header className="sticky top-0 flex h-[9dvh] items-center gap-4 border-b bg-background justify-between z-50 px-4 md:px-6">
+        <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background justify-between z-50 px-4 md:px-6">
             {/* Head */}
             <Head title={props.title} />
 

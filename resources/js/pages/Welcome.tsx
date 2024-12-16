@@ -62,7 +62,7 @@ export default function Welcome({ auth }: Props) {
     return (
         <MainLayout auth={auth} title="Welcome" hasPadding>
             {/* Intro Section */}
-            <section className="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-16 px-4 md:px-8 lg:px-16 py-12 lg:h-[91dvh]">
+            <section className="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-16 px-4 md:px-8 lg:px-16 py-12 lg:h-[85dvh]">
                 {/* Text Content */}
                 <div className="flex flex-col justify-center space-y-6 text-center md:text-left md:w-2/3">
                     <div>

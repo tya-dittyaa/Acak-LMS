@@ -79,6 +79,11 @@ class DriveService
     return '19ImLrnZ81IYFE6r2tzNjUYCw5yd8tST2';
   }
 
+  public function getTeamIconFolderId(): string
+  {
+    return '1QJGAbeYQOp_nB8SFoJ12P16sw8ci4XZN';
+  }
+
   public function getImageLink(string $fileId): string
   {
     return "https://lh3.googleusercontent.com/d/{$fileId}";

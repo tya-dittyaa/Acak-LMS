@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Http\Controllers\TeamController;
+use App\Services\TeamService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -13,6 +15,7 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+    protected $teamService;
 
     /**
      * Determine the current asset version.
@@ -22,6 +25,11 @@ class HandleInertiaRequests extends Middleware
         return parent::version($request);
     }
 
+    public function __construct(TeamService $teamService)
+    {
+        $this->teamService = $teamService;
+    }
+
     /**
      * Define the props that are shared by default.
      *
@@ -29,10 +37,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $teams = $user ? $this->teamService->getTeamsForUser($user->id) : null;
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                'teams' => $teams,
             ],
             'currentPath' => $request->path(),
             'status' => fn() => $request->session()->get('status'),

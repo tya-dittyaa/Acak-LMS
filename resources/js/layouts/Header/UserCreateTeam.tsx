@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
+import { IoCreateOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
 interface CreateTeamFormProps {
@@ -115,7 +116,10 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
                         Creating...
                     </>
                 ) : (
-                    "Create Team"
+                    <>
+                        <IoCreateOutline />
+                        Create Team
+                    </>
                 )}
             </Button>
         </form>

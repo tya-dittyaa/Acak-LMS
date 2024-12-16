@@ -24,7 +24,8 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/teams.php';
 
 Route::any('{catchall}', function () {
-    return Inertia::render('Error/404');
+    return Inertia::render('Error', ['status' => 404]);
 })->where('catchall', '.*');

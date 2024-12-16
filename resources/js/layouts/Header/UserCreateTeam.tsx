@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
+import toast from "react-hot-toast";
 import { IoCreateOutline } from "react-icons/io5";
-import { toast } from "react-toastify";
 
 interface CreateTeamFormProps {
     setOpen: (open: boolean) => void;

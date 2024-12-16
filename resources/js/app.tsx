@@ -4,10 +4,24 @@ import "./bootstrap";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
-import { Bounce, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster, ToastPosition } from "react-hot-toast";
+import { useMediaQuery } from "usehooks-ts";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+
+function ToastWrapper({ children }: { children: React.ReactNode }) {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+    const toastPosition: ToastPosition = isDesktop
+        ? "bottom-right"
+        : "top-right";
+
+    return (
+        <>
+            {children}
+            <Toaster position={toastPosition} reverseOrder={true} />
+        </>
+    );
+}
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -20,22 +34,9 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <>
+            <ToastWrapper>
                 <App {...props} />
-                <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="light"
-                    transition={Bounce}
-                />
-            </>
+            </ToastWrapper>
         );
     },
     progress: {

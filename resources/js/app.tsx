@@ -6,6 +6,7 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
 import { Toaster, ToastPosition } from "react-hot-toast";
 import { useMediaQuery } from "usehooks-ts";
+import { UserTeamProvider } from "./context/UserTeamProvider";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -32,10 +33,13 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
+        const teams = props.initialPage.props.auth.teams;
 
         root.render(
             <ToastWrapper>
-                <App {...props} />
+                <UserTeamProvider teams={teams}>
+                    <App {...props} />
+                </UserTeamProvider>
             </ToastWrapper>
         );
     },

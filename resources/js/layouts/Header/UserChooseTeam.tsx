@@ -36,6 +36,7 @@ export default function UserChooseTeam({ teams }: Props) {
                                         <Avatar className="w-6 h-6 border border-input shadow-sm rounded-lg">
                                             <AvatarImage
                                                 src={icon}
+                                                alt={name}
                                                 className="rounded-lg"
                                             />
                                             <AvatarFallback className="rounded-lg">

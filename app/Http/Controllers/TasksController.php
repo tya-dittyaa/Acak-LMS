@@ -39,4 +39,23 @@ class TasksController extends Controller
 
         return response()->json($task, 201);
     }
+
+    public function updateAction($taskId, Request $request)
+    {
+        try {
+            $request->validate([
+                'ActionId' => 'required|integer',
+            ]);
+
+            $task = Task::findOrFail($taskId);
+
+            $task->action()->update(['ActionId' => $request->ActionId]);
+
+            return response()->json(['Action' => $task->action->Action], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating action: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
 }

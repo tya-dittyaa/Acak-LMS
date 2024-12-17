@@ -67,7 +67,7 @@ export function DatePickerDemo({ date, setDate }: DatePickerDemoProps) {
     
 
 interface Task {
-    id: number;
+    TaskId: number;
     Task: string;
     member: { MemberId: number };
     priority: { Priority: string };
@@ -156,6 +156,7 @@ export default function ListTasks() {
 
                 const combinedData = taskData.map((task: Task) => ({
                     ...task,
+                    id: task.TaskId,
                     MemberDescription: memberData.find(
                         (member) => member.MemberId === task.member.MemberId
                     )?.MemberName || "N/A",
@@ -165,7 +166,7 @@ export default function ListTasks() {
                 }));
 
                 setTasks(combinedData);
-                // console.log(membersInTeam);
+                // console.log(combinedData);
                 setError(null);
             } catch (error) {
                 setError("Unable to load tasks. Please try again later.");
@@ -248,6 +249,45 @@ export default function ListTasks() {
                 return "bg-red-400 text-black";
             default:
                 return "bg-gray-300 text-black";
+        }
+    };
+
+    const handleActionUpdate = async (taskId: number, actionId: number) => {
+        try {
+            const metaElement = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = metaElement ? metaElement.getAttribute('content') : null;
+
+            if (!csrfToken) throw new Error("CSRF token not found");
+
+            const response = await fetch(`/tasks/${taskId}/action`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                body: JSON.stringify({ ActionId: actionId }),
+            });
+            console.log("Request payload:", JSON.stringify({ ActionId: actionId }));
+
+            console.log("Response status:", response.status);
+
+            if (!response.ok) {
+                throw new Error("Failed to update action");
+            }
+
+            const updatedTask = await response.json();
+            console.log(updatedTask);
+
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.TaskId === taskId
+                        ? { ...task, action: { Action: updatedTask.Action } }
+                        : task
+                )
+            );
+        } catch (error) {
+            console.error("Error updating task action:", error);
+            setError("Failed to update action. Please try again.");
         }
     };
 
@@ -372,8 +412,8 @@ export default function ListTasks() {
                     </TableHeader>
 
                     <TableBody>
-        {tasks.map((task, index) => (
-                        <TableRow key={task.id || index}>
+                    {tasks.map((task, index) => (
+                        <TableRow key={task.TaskId || index}>
                             <TableCell>
                                     <Badge className={`${getPriorityClass(task.priority?.Priority)}`}>
                                         {task.priority?.Priority || "N/A"}
@@ -398,13 +438,10 @@ export default function ListTasks() {
                             <TableCell><Badge className="bg-green-100 text-green-700 rounded-xl" variant="secondary">{task.action?.Action || "N/A"}</Badge></TableCell>
                             <TableCell>
                                 <div className="flex justify-center items-center gap-2">
-                                    <IconButton radius="large" size="3" color="green" variant="ghost">
+                                    <IconButton radius="large" size="3" color="green" variant="ghost" onClick={() => handleActionUpdate(task.TaskId, 3)}>
                                         <Check width="20" height="20"/>
                                     </IconButton>
-                                    <IconButton radius="large" size="3" color="blue" variant="ghost">
-                                        <MagnifyingGlassIcon width="20" height="20"/>
-                                    </IconButton>
-                                    <IconButton radius="large" size="3" color="crimson" variant="ghost">
+                                    <IconButton radius="large" size="3" color="crimson" variant="ghost" onClick={() => handleActionUpdate(task.TaskId, 2)}>
                                         <Trash width="20" height="20"/>
                                     </IconButton>
                                 </div>

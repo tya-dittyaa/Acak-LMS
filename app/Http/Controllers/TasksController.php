@@ -14,8 +14,8 @@ class TasksController extends Controller
         return response()->json($tasks);
     }
 
-    public function store(){
-        $validatedData = $request->validate([
+    public function store(Request $request){
+        $request->validate([
             'Task' => 'required|string|max:255',
             'CreatedAt' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             'MemberId' => 'required|integer',
@@ -26,18 +26,18 @@ class TasksController extends Controller
             'TeamId' => 'required|integer',
         ]);
 
-        $task = Task::create([
-            'Task' => $validatedData['Task'],
-            'CreatedAt' => $validatedData['CreatedAt'],
-            'MemberId' => (int)$validatedData['MemberId'],
-            'UpdatedAt' => $validatedData['UpdatedAt'],
-            'PriorityId' => (int)$validatedData['PriorityId'],
-            'ActionId' => (int)$validatedData['ActionId'],
-            'Deadline' => $validatedData['Deadline'],
-            'TeamId' => (int)$validatedData['TeamId'],
-        ]);
+        $task = new Tasks();
+        $task->Task = $request->Task;
+        $task->CreatedAt = $request->CreatedAt;
+        $task->MemberId = $request->MemberId;
+        $task->UpdatedAt = $request->UpdatedAt;
+        $task->PriorityId = $request->PriorityId;
+        $task->ActionId = $request->ActionId;
+        $task->Deadline = $request->Deadline;
+        $task->TeamId = $request->TeamId;
+        $task->save();
 
-        return response()->json($task, 201);
+        return redirect()->back()->with('status', 'Task created successfully.');
     }
 
     public function updateAction($taskId, Request $request)
@@ -47,15 +47,22 @@ class TasksController extends Controller
                 'ActionId' => 'required|integer',
             ]);
 
-            $task = Task::findOrFail($taskId);
+            $task = Tasks::findOrFail($taskId);
 
-            $task->action()->update(['ActionId' => $request->ActionId]);
+            $task->ActionId = $request->ActionId;
+            $task->UpdatedAt = now();
+            $task->save();
 
-            return response()->json(['Action' => $task->action->Action], 200);
+            return response()->json([
+                'Action' => $task->action ? $task->action->Action : 'Action updated',
+                'UpdatedAt' => $task->UpdatedAt,
+            ], 200);
 
         } catch (\Exception $e) {
             \Log::error('Error updating action: ' . $e->getMessage());
+
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
+
 }

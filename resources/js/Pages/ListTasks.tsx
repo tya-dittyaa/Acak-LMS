@@ -30,6 +30,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/Components/ui/calendar";
 import { Textarea } from "@/Components/ui/textarea";
 import { useState, useEffect } from 'react';
+import { useForm } from "@inertiajs/react";
+import toast from "react-hot-toast";
+import { useRef } from "react";
 
 interface DatePickerDemoProps {
     date: Date | undefined;
@@ -106,7 +109,7 @@ export default function ListTasks() {
     const [membersInTeam, setMembersInTeam] = useState<Member[]>([]);
     const [priorityName, setPriority] = useState<Priority[]>([]);
     const TeamId = 1; 
-    const [newTask, setNewTask] = useState({
+    const { data, setData, post, reset, errors, processing } = useForm({
         Task: "",
         CreatedAt: new Date(),
         MemberId: "",
@@ -114,7 +117,7 @@ export default function ListTasks() {
         PriorityId: "",
         ActionId: 1,
         Deadline: "",
-        TeamId: TeamId
+        TeamId
     });
 
 
@@ -178,61 +181,21 @@ export default function ListTasks() {
         fetchTasks();
     }, []);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { id, value } = e.target;
-        setNewTask({ ...newTask, [id]: value });
-    };
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    const handleSelectChange = (id: string, value: string) => {
-        setNewTask({ ...newTask, [id]: value });
-    };
-
-    const handleSubmit = async () => {
-        try {
-            const metaElement = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = metaElement ? metaElement.getAttribute('content') : null;
-
-            if (!csrfToken) {
-                throw new Error("CSRF token not found");
+        post(route("tasks.store"), {
+            onSuccess: () => {
+                toast.success("Task created successfully!");
+                reset();
+                window.location.reload();
+            },
+            onError: (errors) => {
+                toast.error("Failed to create task. Please check the form.");
+                console.error(errors);
             }
-            console.log("Submitting task:", JSON.stringify(newTask, null, 2));
-
-            console.log(newTask);
-            console.log(csrfToken);
-
-            const response = await fetch("/addTasks", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
-                },
-                body: JSON.stringify(newTask),
-            });
-
-            if (!response.ok) throw new Error("Failed to save task");
-
-            const savedTask = await response.json();
-            console.log("Server Response:", savedTask);
-            if (!response.ok) throw new Error(savedTask.message || "Failed to save task");
-            setTasks([...tasks, savedTask]);
-            setNewTask({
-                Task: "",
-                CreatedAt: new Date(),
-                MemberId: "",
-                UpdatedAt: new Date(),
-                PriorityId: "",
-                ActionId: 1,
-                Deadline: "",
-                TeamId: TeamId,
-            });
-            setError(null);
-        } catch (error) {
-            console.error(error);
-            setError("Failed to save task. Please try again.");
-        }
+        });
     };
-
-
 
     if (loading) return <div>Loading tasks...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
@@ -314,6 +277,7 @@ export default function ListTasks() {
                             </DialogTrigger>
 
                             <DialogContent className="sm:max-w-[425px]">
+                                <form onSubmit={handleSubmit}>
                                 <DialogHeader>
                                     <DialogTitle>Add Task</DialogTitle>
                                     <DialogDescription>
@@ -328,8 +292,8 @@ export default function ListTasks() {
                                         </Label>
                                         <Textarea
                                             id="Task"
-                                            value={newTask.Task}
-                                            onChange={handleInputChange}
+                                            value={data.Task}
+                                            onChange={(e) => setData("Task", e.target.value)}
                                             className="w-[280px]"
                                         />
                                     </div>
@@ -339,7 +303,7 @@ export default function ListTasks() {
                                             Priority
                                         </Label>
                                         
-                                        <Select onValueChange={(value) => handleSelectChange("PriorityId", value)}>
+                                        <Select onValueChange={(value) => setData("PriorityId", value)}>
                                         <SelectTrigger className="w-[280px]">
                                             <SelectValue placeholder="" />
                                         </SelectTrigger>
@@ -358,7 +322,7 @@ export default function ListTasks() {
                                             Assigned To
                                         </Label>
                                         
-                                        <Select onValueChange={(value) => handleSelectChange("MemberId", value)}>
+                                        <Select onValueChange={(value) => setData("MemberId", value)}>
                                         <SelectTrigger className="w-[280px]">
                                             <SelectValue placeholder="" />
                                         </SelectTrigger>
@@ -378,9 +342,9 @@ export default function ListTasks() {
                                         </Label>
 
                                         <DatePickerDemo
-                                            date={newTask.Deadline ? new Date(newTask.Deadline) : undefined}
+                                            date={data.Deadline ? new Date(data.Deadline) : undefined}
                                             setDate={(value) =>
-                                                setNewTask({ ...newTask, Deadline: value ? format(value, "yyyy-MM-dd") : "" })
+                                                setData("Deadline", value ? format(value, "yyyy-MM-dd") : "")
                                             }
                                         />
 
@@ -389,8 +353,11 @@ export default function ListTasks() {
                                 </div>
 
                                 <DialogFooter>
-                                    <Button type="button" onClick={handleSubmit}>Save</Button>
+                                    <Button type="submit" disabled={processing}>
+                                        Save
+                                    </Button>
                                 </DialogFooter>
+                                </form>
                             </DialogContent>
                         </Dialog>
                     </div>

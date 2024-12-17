@@ -25,10 +25,23 @@ export default function Error(props: Props) {
         number,
         { title: string; description: string }
     > = {
+        401: {
+            title: "401: Unauthorized",
+            description: "Sorry, you are not authorized to access this page.",
+        },
+        403: {
+            title: "403: Forbidden",
+            description: "Sorry, you are not authorized to access this page.",
+        },
         404: {
             title: "404: Page Not Found",
             description:
                 "Sorry, the page you are looking for could not be found.",
+        },
+        419: {
+            title: "419: Page Expired",
+            description:
+                "Sorry, your session has expired. Please refresh and try again.",
         },
         500: {
             title: "500: Server Error",

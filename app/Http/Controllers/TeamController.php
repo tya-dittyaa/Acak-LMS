@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class TeamController extends Controller
 {
@@ -42,7 +43,81 @@ class TeamController extends Controller
         return $code;
     }
 
-    // Create a new team
+    /*
+     * Display the team dashboard.
+     */
+    public function show(Request $request, $teamId)
+    {
+        // Get the team
+        $team = Team::find($teamId);
+
+        // Check if the team exists
+        if (!$team) {
+            return Inertia::render('Error', ['status' => 404]);
+        }
+
+        // Check if the user is a member of the team and not a guest
+        $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
+        $teamMapping = TeamMapping::where('teams_id', $teamId)
+            ->where('member_id', $request->user()->id)
+            ->where('role_id', '!=', $guestRoleId)
+            ->first();
+
+        if (!$teamMapping) {
+            return Inertia::render('Error', ['status' => 403]);
+        }
+
+        // Get the team roles
+        $teamRoles = TeamRole::all();
+
+        // Get the team members with the owner on top and others sorted by join time
+        $teamMembers = DB::table('team_mappings')
+            ->join('users', 'team_mappings.member_id', '=', 'users.id')
+            ->join('team_roles', 'team_mappings.role_id', '=', 'team_roles.id')
+            ->select('team_mappings.*', 'users.name as member_name', 'team_roles.name as role_name')
+            ->where('team_mappings.teams_id', $teamId)
+            ->orderByRaw("
+                CASE 
+                    WHEN team_roles.name = 'Owner' THEN 0 
+                    ELSE 1 
+                END, 
+                team_mappings.joined_at ASC
+            ")
+            ->get();
+
+        // Get the team applications
+        $teamApplications = DB::table('team_mappings')
+            ->join('users', 'team_mappings.member_id', '=', 'users.id')
+            ->join('team_roles', 'team_mappings.role_id', '=', 'team_roles.id')
+            ->select('team_mappings.*', 'users.name as member_name', 'team_roles.name as role_name')
+            ->where('team_mappings.teams_id', $teamId)
+            ->where('team_mappings.role_id', $guestRoleId)
+            ->get();
+
+        // Get the team icon
+        $teamIcon = $team->icon;
+
+        // Get the team owner
+        $teamOwner = DB::table('team_mappings')
+            ->join('users', 'team_mappings.member_id', '=', 'users.id')
+            ->select('team_mappings.*', 'users.name as member_name')
+            ->where('team_mappings.teams_id', $teamId)
+            ->where('team_mappings.role_id', TeamRole::where('name', 'Owner')->first()->id)
+            ->first();
+
+        return inertia('TeamDashboard', [
+            'team' => $team,
+            'teamRoles' => $teamRoles,
+            'teamMembers' => $teamMembers,
+            'teamApplications' => $teamApplications,
+            'teamIcon' => $teamIcon,
+            'teamOwner' => $teamOwner,
+        ]);
+    }
+
+    /*
+     * Create a new team.
+     */
     public function store(Request $request)
     {
         // Validate the request
@@ -111,7 +186,9 @@ class TeamController extends Controller
         return redirect()->back()->with('status', 'Team created successfully.');
     }
 
-    // Join a team
+    /*
+    * Update the team details.
+    */
     public function join(Request $request)
     {
         // Validate the request

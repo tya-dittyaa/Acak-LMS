@@ -86,7 +86,6 @@ class ProfileController extends Controller
     /**
      * Update the user's profile avatar.
      */
-    // In your controller method
     public function updateAvatar(Request $request)
     {
         $request->validate([

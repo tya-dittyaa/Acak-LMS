@@ -22,9 +22,20 @@ Route::get('/listTasks', function () {
     return Inertia::render('ListTasks');
 });
 
+Route::get('/dashboardsatu', function () {
+    return Inertia::render('DashboardAll');
+});
+
+Route::get('/dashboarddua', function () {
+    return Inertia::render('DashboardAll');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+// });
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

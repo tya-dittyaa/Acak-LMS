@@ -45,8 +45,16 @@ const baseCommandGroups: CommandGroupData[] = [
 export default function UserCommand() {
     const { selectedTeam } = useUserTeam();
 
-    const commandGroups = [...baseCommandGroups];
-    if (selectedTeam) {
+    // Avoid adding duplicate "Team Details"
+    const commandGroups = baseCommandGroups.map((group) => ({
+        ...group,
+        items: group.items.slice(), // Ensure no mutation
+    }));
+
+    if (
+        selectedTeam &&
+        !commandGroups[0].items.find((item) => item.pageName === "Team Details")
+    ) {
         commandGroups[0].items.push({
             emoji: "👥",
             pageName: "Team Details",

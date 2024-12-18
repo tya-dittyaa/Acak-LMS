@@ -105,7 +105,7 @@ class TeamController extends Controller
             ->where('team_mappings.role_id', TeamRole::where('name', 'Owner')->first()->id)
             ->first();
 
-        return inertia('TeamDashboard', [
+        return inertia('TeamInfoDetails', [
             'team' => $team,
             'teamRoles' => $teamRoles,
             'teamMembers' => $teamMembers,

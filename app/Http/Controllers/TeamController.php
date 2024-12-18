@@ -119,7 +119,9 @@ class TeamController extends Controller
             $this->uploadTeamIcon($team, $request->file('icon'));
         }
 
-        return redirect()->back()->with('status', 'Team created successfully.');
+        return redirect()->back()
+            ->with('status', 'Team created successfully.')
+            ->with('newTeam', $team);
     }
 
     /**

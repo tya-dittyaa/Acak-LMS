@@ -6,26 +6,38 @@ import { UserTeam } from "@/types";
 // Context
 interface UserTeamContextType {
     selectedTeam: UserTeam | null;
-    setSelectedTeam: (team: UserTeam) => void;
+    setSelectedTeam: (team: UserTeam | null) => void;
+    removeTeam: (teamId: string) => void;
+    updateTeam: (newTeam: UserTeam) => void;
 }
 
 const UserTeamContext = createContext<UserTeamContextType | undefined>(
     undefined
 );
 
-// Helper function to manage local storage
-const LOCAL_STORAGE_KEY = "selected_team";
+// Helper functions for managing local storage
+const LOCAL_STORAGE_TEAMS_KEY = "teams";
+const LOCAL_STORAGE_SELECTED_TEAM_KEY = "selected_team";
+
+function getSavedTeams(): UserTeam[] {
+    const savedTeams = localStorage.getItem(LOCAL_STORAGE_TEAMS_KEY);
+    return savedTeams ? JSON.parse(savedTeams) : [];
+}
+
+function saveTeams(teams: UserTeam[]): void {
+    localStorage.setItem(LOCAL_STORAGE_TEAMS_KEY, JSON.stringify(teams));
+}
 
 function getSavedTeam(): string | null {
-    return localStorage.getItem(LOCAL_STORAGE_KEY);
+    return localStorage.getItem(LOCAL_STORAGE_SELECTED_TEAM_KEY);
 }
 
 function saveTeam(teamId: string): void {
-    localStorage.setItem(LOCAL_STORAGE_KEY, teamId);
+    localStorage.setItem(LOCAL_STORAGE_SELECTED_TEAM_KEY, teamId);
 }
 
 function clearSavedTeam(): void {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    localStorage.removeItem(LOCAL_STORAGE_SELECTED_TEAM_KEY);
 }
 
 // Provider Component
@@ -41,33 +53,76 @@ export const UserTeamProvider: React.FC<UserTeamProviderProps> = ({
     const [selectedTeam, setSelectedTeamState] = useState<UserTeam | null>(
         null
     );
+    const [currentTeams, setCurrentTeams] = useState<UserTeam[]>([]);
 
+    // Initialize state from props or local storage
     useEffect(() => {
-        if (teams.length === 0) {
-            setSelectedTeamState(null);
-            clearSavedTeam();
-            return;
+        const savedTeams = getSavedTeams();
+        const savedTeamId = getSavedTeam();
+
+        if (teams.length > 0) {
+            setCurrentTeams(teams);
+            saveTeams(teams);
+        } else if (savedTeams.length > 0) {
+            setCurrentTeams(savedTeams);
         }
 
-        const savedTeamId = getSavedTeam();
-        const foundTeam = teams.find((team) => team.id === savedTeamId);
+        const foundTeam =
+            (teams.length > 0 ? teams : savedTeams).find(
+                (team) => team.id === savedTeamId
+            ) || null;
 
         if (foundTeam) {
             setSelectedTeamState(foundTeam);
-        } else {
-            const defaultTeam = teams[0];
+        } else if (teams.length > 0 || savedTeams.length > 0) {
+            const defaultTeam = teams.length > 0 ? teams[0] : savedTeams[0];
             setSelectedTeamState(defaultTeam);
             saveTeam(defaultTeam.id);
+        } else {
+            setSelectedTeamState(null);
+            clearSavedTeam();
         }
     }, [teams]);
 
-    const setSelectedTeam = (team: UserTeam) => {
+    // Update selected team and save in local storage
+    const setSelectedTeam = (team: UserTeam | null) => {
         setSelectedTeamState(team);
-        saveTeam(team.id);
+        if (team) {
+            saveTeam(team.id);
+        } else {
+            clearSavedTeam();
+        }
+    };
+
+    // Remove a team and update local storage
+    const removeTeam = (teamId: string) => {
+        const updatedTeams = currentTeams.filter((team) => team.id !== teamId);
+        setCurrentTeams(updatedTeams);
+        saveTeams(updatedTeams);
+
+        // Update selected team
+        if (selectedTeam?.id === teamId) {
+            const nextTeam = updatedTeams[0] || null;
+            setSelectedTeam(nextTeam);
+        }
+    };
+
+    // Add a new team and update local storage
+    const updateTeam = (newTeam: UserTeam) => {
+        const updatedTeams = [...currentTeams, newTeam];
+        setCurrentTeams(updatedTeams);
+        saveTeams(updatedTeams);
     };
 
     return (
-        <UserTeamContext.Provider value={{ selectedTeam, setSelectedTeam }}>
+        <UserTeamContext.Provider
+            value={{
+                selectedTeam,
+                setSelectedTeam,
+                removeTeam,
+                updateTeam,
+            }}
+        >
             {children}
         </UserTeamContext.Provider>
     );

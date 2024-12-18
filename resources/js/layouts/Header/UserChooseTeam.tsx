@@ -29,9 +29,7 @@ export default function UserChooseTeam({ teams }: Props) {
                 disabled={isDisabled}
                 onValueChange={(value) => {
                     const team = teams.find((team) => team.id === value);
-                    if (team) {
-                        setSelectedTeam(team);
-                    }
+                    setSelectedTeam(team || null);
                 }}
                 value={selectedTeam?.id || ""}
             >

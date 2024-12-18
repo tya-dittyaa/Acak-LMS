@@ -5,6 +5,7 @@ import PrimaryButton from "@/components/default/PrimaryButton";
 import TextInput from "@/components/default/TextInput";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useUserTeam } from "@/context/UserTeamProvider";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
@@ -16,6 +17,7 @@ export default function Login({
     status?: string;
     canResetPassword: boolean;
 }) {
+    const { clearStorage } = useUserTeam();
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
         password: "",
@@ -26,8 +28,16 @@ export default function Login({
         e.preventDefault();
 
         post(route("login"), {
-            onFinish: () => reset("password"),
+            onFinish: () => {
+                clearStorage();
+                reset("password");
+            },
         });
+    };
+
+    const handleSocialLogin = (provider: string) => {
+        clearStorage();
+        window.location.href = route("socialite.redirect", provider);
     };
 
     return (
@@ -116,12 +126,7 @@ export default function Login({
             <div className="mt-6 flex flex-col gap-2">
                 <Button
                     className="flex items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                    onClick={() =>
-                        (window.location.href = route(
-                            "socialite.redirect",
-                            "google"
-                        ))
-                    }
+                    onClick={() => handleSocialLogin("google")}
                 >
                     <FaGoogle className="text-lg" />
                     <span>Continue with Google</span>
@@ -129,12 +134,7 @@ export default function Login({
 
                 <Button
                     className="flex items-center justify-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2"
-                    onClick={() =>
-                        (window.location.href = route(
-                            "socialite.redirect",
-                            "github"
-                        ))
-                    }
+                    onClick={() => handleSocialLogin("github")}
                 >
                     <FaGithub className="text-lg" />
                     <span>Continue with GitHub</span>

@@ -90,18 +90,13 @@ class TeamController extends Controller
             return Inertia::render('Error', ['status' => 403]);
         }
 
-        $teamRoles = TeamRole::all();
-        $teamMembers = $this->getTeamMembers($teamId);
-        $teamApplications = $this->getTeamApplications($teamId, $guestRoleId);
-        $teamOwner = $this->getTeamOwner($teamId);
+        $teamMembers = $this->getTeamMembersWithDetails($teamId);
+        $teamApplications = $this->getTeamApplicationsWithDetails($teamId, $guestRoleId);
 
-        return inertia('TeamInfoDetails', [
+        return inertia('Teams/TeamDetails', [
             'team' => $team,
-            'teamRoles' => $teamRoles,
             'teamMembers' => $teamMembers,
             'teamApplications' => $teamApplications,
-            'teamIcon' => $team->icon,
-            'teamOwner' => $teamOwner,
         ]);
     }
 
@@ -229,37 +224,55 @@ class TeamController extends Controller
         ]);
     }
 
-    private function getTeamMembers($teamId)
+    private function getTeamMembersWithDetails($teamId)
     {
-        return DB::table('team_mappings')
-            ->join('users', 'team_mappings.member_id', '=', 'users.id')
-            ->join('team_roles', 'team_mappings.role_id', '=', 'team_roles.id')
-            ->where('team_mappings.teams_id', $teamId)
+        $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
+
+        return DB::table('teams_mapping')
+            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+            ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.avatar',
+                'users.email',
+                'teams_roles.name as role'
+            )
+            ->where('teams_mapping.teams_id', $teamId)
+            ->where('teams_mapping.role_id', '!=', $guestRoleId) // Exclude Guest role
             ->orderByRaw("
                 CASE 
-                    WHEN team_roles.name = 'Owner' THEN 0 
+                    WHEN teams_roles.name = 'Owner' THEN 0 
                     ELSE 1 
                 END, 
-                team_mappings.joined_at ASC
+                teams_mapping.joined_at ASC
             ")
             ->get();
     }
 
-    private function getTeamApplications($teamId, $guestRoleId)
+    private function getTeamApplicationsWithDetails($teamId, $guestRoleId)
     {
-        return DB::table('team_mappings')
-            ->join('users', 'team_mappings.member_id', '=', 'users.id')
-            ->where('team_mappings.teams_id', $teamId)
-            ->where('team_mappings.role_id', $guestRoleId)
+        return DB::table('teams_mapping')
+            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+            ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.avatar',
+                'users.email',
+                DB::raw("'Guest' as role") // Since applications always have the Guest role
+            )
+            ->where('teams_mapping.teams_id', $teamId)
+            ->where('teams_mapping.role_id', $guestRoleId)
             ->get();
     }
 
     private function getTeamOwner($teamId)
     {
-        return DB::table('team_mappings')
-            ->join('users', 'team_mappings.member_id', '=', 'users.id')
-            ->where('team_mappings.teams_id', $teamId)
-            ->where('team_mappings.role_id', TeamRole::where('name', 'Owner')->first()->id)
+        return DB::table('teams_mapping')
+            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+            ->where('teams_mapping.teams_id', $teamId)
+            ->where('teams_mapping.role_id', TeamRole::where('name', 'Owner')->first()->id)
             ->first();
     }
 

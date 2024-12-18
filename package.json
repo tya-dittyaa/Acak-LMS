@@ -42,6 +42,8 @@
         "react-chartjs-2": "^5.2.0",
         "react-day-picker": "^8.10.1",
         "react-router-dom": "^6.28.0",
+        "react-svg-gauge": "^1.0.10",
+        "recharts": "^2.15.0",
         "tailwind-merge": "^2.5.2",
         "tailwindcss-animate": "^1.0.7"
     }

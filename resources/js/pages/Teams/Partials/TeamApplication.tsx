@@ -216,9 +216,6 @@ export default function TeamApplication({ team, members }: Props) {
                                         Name
                                     </TableHead>
                                     <TableHead className="w-[200px] text-center">
-                                        Role
-                                    </TableHead>
-                                    <TableHead className="w-[200px] text-center">
                                         Action
                                     </TableHead>
                                 </TableRow>
@@ -231,11 +228,6 @@ export default function TeamApplication({ team, members }: Props) {
                                     >
                                         <TableCell className="text-center">
                                             <UserLayout member={member} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <h1 className="text-center">
-                                                {member.role}
-                                            </h1>
                                         </TableCell>
                                         <TableCell>
                                             <AcceptApplicationForm

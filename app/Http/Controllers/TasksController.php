@@ -40,17 +40,17 @@ class TasksController extends Controller
         return redirect()->back()->with('status', 'Task created successfully.');
     }
 
-    public function update(Request $request, Task $task)
+    public function update(Request $request, Tasks $task, int $actionId)
     {
+        \Log::info('Request data:', $request->all());
         try {
-            $validated = $request->validate([
-                'ActionId' => 'required|integer',
-            ]);
+            $task = Tasks::findOrFail($task->TaskId);
 
             $task->update([
-                'ActionId' => $validated['ActionId'],
+                'ActionId' => $actionId,
                 'UpdatedAt' => now(),
             ]);
+            \Log::info('Task after update:', $task->toArray());
 
             return redirect()->back()->with('success', 'Task updated successfully!');
         } catch (\Exception $e) {

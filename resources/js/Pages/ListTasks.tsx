@@ -109,7 +109,7 @@ export default function ListTasks() {
     const [membersInTeam, setMembersInTeam] = useState<Member[]>([]);
     const [priorityName, setPriority] = useState<Priority[]>([]);
     const TeamId = 1; 
-    const { data, setData, post, reset, errors, processing, put } = useForm({
+    const { data, setData, post, reset, errors, processing, patch } = useForm({
         Task: "",
         CreatedAt: new Date(),
         MemberId: "",
@@ -217,13 +217,13 @@ export default function ListTasks() {
 
     const handleActionUpdate = (taskId: number, actionId: number) => {
         setData("ActionId", actionId);
-        put(route("tasks.update", taskId), {
+        patch(route("tasks.update", { task: taskId, actionId: actionId }), {
             onSuccess: () => {
                 toast.success("Task action updated successfully!");
                 setTasks((prevTasks) =>
                     prevTasks.map((task) =>
                         task.TaskId === taskId
-                            ? { ...task, action: { ...task.action, Action: actionId === 3 ? "Completed" : "Deleted" } }
+                            ? { ...task, ActionId: actionId }
                             : task
                     )
                 );

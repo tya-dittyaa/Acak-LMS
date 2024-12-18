@@ -43,7 +43,7 @@ RUN php artisan config:clear \
   && php artisan config:cache \
   && php artisan route:clear \
   && php artisan route:cache \
-  && php artisan optimize --force
+  && php artisan optimize
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html

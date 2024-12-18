@@ -22,18 +22,17 @@ Route::get('/listTasks', function () {
     return Inertia::render('ListTasks');
 });
 
-Route::get('/dashboardsatu', function () {
+Route::get('/DBHome', function () {
     return Inertia::render('DashboardAll');
 });
 
-Route::get('/dashboarddua', function () {
-    return Inertia::render('DashboardAll');
+Route::get('/DBDetail', function () {
+    return Inertia::render('DashboardDetail');
 });
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-// });
 
 
 

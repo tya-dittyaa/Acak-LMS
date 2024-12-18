@@ -10,10 +10,11 @@ interface Props extends PageProps {
     team: ITeam;
     teamApplications: IUserTeam[];
     teamMembers: IUserTeam[];
+    teamOwner: IUserTeam;
 }
 
 export default function TeamDetails(props: Props) {
-    const { team, teamApplications, teamMembers } = props;
+    const { auth, team, teamApplications, teamMembers, teamOwner } = props;
 
     return (
         <MainLayout auth={props.auth} title="Dashboard" hasPadding>
@@ -27,7 +28,12 @@ export default function TeamDetails(props: Props) {
 
                 <div className="flex flex-col lg:flex-row gap-4">
                     <TeamMember team={team} members={teamMembers} />
-                    <TeamApplication team={team} members={teamApplications} />
+                    <TeamApplication
+                        auth={auth}
+                        team={team}
+                        members={teamApplications}
+                        teamOwner={teamOwner}
+                    />
                 </div>
             </div>
         </MainLayout>

@@ -97,6 +97,7 @@ class TeamController extends Controller
             'team' => $team,
             'teamMembers' => $teamMembers,
             'teamApplications' => $teamApplications,
+            'teamOwner' => $this->getTeamOwner($teamId),
         ]);
     }
 
@@ -273,6 +274,13 @@ class TeamController extends Controller
             ->join('users', 'teams_mapping.member_id', '=', 'users.id')
             ->where('teams_mapping.teams_id', $teamId)
             ->where('teams_mapping.role_id', TeamRole::where('name', 'Owner')->first()->id)
+            ->select(
+                'users.id',
+                'users.name',
+                'users.avatar',
+                'users.email',
+                DB::raw("'Owner' as role")
+            )
             ->first();
     }
 

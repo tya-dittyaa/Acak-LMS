@@ -20,14 +20,16 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { PageProps } from "@/types";
 import { useForm } from "@inertiajs/react";
 import toast from "react-hot-toast";
 import { AiOutlineClose } from "react-icons/ai";
 import { FaCheck } from "react-icons/fa";
 
-interface Props {
+interface Props extends PageProps {
     team: ITeam;
     members: IUserTeam[];
+    teamOwner: IUserTeam;
 }
 
 interface UserLayoutProps {
@@ -192,7 +194,31 @@ function AcceptApplicationForm({ team, member }: FormProps) {
     );
 }
 
-export default function TeamApplication({ team, members }: Props) {
+export default function TeamApplication({
+    auth,
+    team,
+    members,
+    teamOwner,
+}: Props) {
+    const hasOwnerRole = teamOwner.id === auth.user.id;
+
+    if (!hasOwnerRole) {
+        return (
+            <Card className="flex flex-col w-full lg:w-1/2">
+                <CardHeader className="flex items-center justify-between">
+                    <h1 className="font-bold text-xl text-center lg:text-left">
+                        Team Applications
+                    </h1>
+                </CardHeader>
+                <CardContent className="flex items-center justify-center py-10">
+                    <h2 className="text-gray-500 text-lg text-center">
+                        Owner role is required to manage team applications.
+                    </h2>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
         <Card className="flex flex-col w-full lg:w-1/2">
             <CardHeader className="flex items-center justify-between">
@@ -203,7 +229,7 @@ export default function TeamApplication({ team, members }: Props) {
             <CardContent>
                 {members.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10">
-                        <h2 className="text-gray-500 text-lg">
+                        <h2 className="text-gray-500 text-lg text-center">
                             No applications available.
                         </h2>
                     </div>

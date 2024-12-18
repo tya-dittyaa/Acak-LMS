@@ -240,7 +240,7 @@ class TeamController extends Controller
                 'teams_roles.name as role'
             )
             ->where('teams_mapping.teams_id', $teamId)
-            ->where('teams_mapping.role_id', '!=', $guestRoleId) // Exclude Guest role
+            ->where('teams_mapping.role_id', '!=', $guestRoleId)
             ->orderByRaw("
                 CASE 
                     WHEN teams_roles.name = 'Owner' THEN 0 
@@ -261,7 +261,7 @@ class TeamController extends Controller
                 'users.name',
                 'users.avatar',
                 'users.email',
-                DB::raw("'Guest' as role") // Since applications always have the Guest role
+                DB::raw("'Guest' as role")
             )
             ->where('teams_mapping.teams_id', $teamId)
             ->where('teams_mapping.role_id', $guestRoleId)
@@ -373,5 +373,78 @@ class TeamController extends Controller
         $applicant->delete();
 
         return redirect()->back()->with('status', 'Member application declined successfully.');
+    }
+
+    /**
+     * Delete a team.
+     */
+    public function destroy(Request $request, $teamId)
+    {
+        $team = $this->getTeamOrFail($teamId);
+
+        if (!$team) {
+            return redirect()->back()->withErrors(['team' => 'Team not found.']);
+        }
+
+        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
+
+        if (!$teamMapping || $teamMapping->role_id !== $ownerRoleId) {
+            return redirect()->back()->withErrors(['permission' => 'Only the team owner can delete the team.']);
+        }
+
+        DB::transaction(function () use ($team) {
+            TeamMapping::where('teams_id', $team->id)->delete();
+
+            if ($team->is_gdrive_icon && $team->icon) {
+                $fileId = $this->driveService->getFileIdFromUrl($team->icon);
+                $this->driveService->deleteFile($fileId);
+            }
+
+            $team->delete();
+        });
+
+        return redirect()->route('dashboard')->with('status', 'Team deleted successfully.');
+    }
+
+    /**
+     * Update an existing team.
+     */
+    public function update(Request $request, $teamId)
+    {
+        $team = $this->getTeamOrFail($teamId);
+
+        if (!$team) {
+            return redirect()->back()->withErrors(['team' => 'Team not found.']);
+        }
+
+        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
+
+        if (!$teamMapping || $teamMapping->role_id !== $ownerRoleId) {
+            return redirect()->back()->withErrors(['permission' => 'Only the team owner can edit the team.']);
+        }
+
+        $request->validate($this->teamValidationRules(), $this->teamValidationMessages());
+
+        if (Team::where('name', $request->name)->where('id', '!=', $team->id)->exists()) {
+            return redirect()->back()->withErrors(['name' => 'This team name is already in use. Please choose another name.']);
+        }
+
+        $team->name = $request->name;
+        $team->description = $request->description;
+
+        if ($request->hasFile('icon')) {
+            if ($team->is_gdrive_icon && $team->icon) {
+                $fileId = $this->driveService->getFileIdFromUrl($team->icon);
+                $this->driveService->deleteFile($fileId);
+            }
+
+            $this->uploadTeamIcon($team, $request->file('icon'));
+        }
+
+        $team->save();
+
+        return redirect()->back()->with('status', 'Team updated successfully.');
     }
 }

@@ -24,10 +24,19 @@ export default function TeamDetails(props: Props) {
             />
 
             <div className="flex flex-col gap-4">
-                <TeamInformation team={team} />
+                <TeamInformation
+                    auth={auth}
+                    team={team}
+                    teamOwner={teamOwner}
+                />
 
                 <div className="flex flex-col lg:flex-row gap-4">
-                    <TeamMember team={team} members={teamMembers} />
+                    <TeamMember
+                        auth={auth}
+                        team={team}
+                        members={teamMembers}
+                        teamOwner={teamOwner}
+                    />
                     <TeamApplication
                         auth={auth}
                         team={team}

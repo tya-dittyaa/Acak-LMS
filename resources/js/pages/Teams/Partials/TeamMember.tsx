@@ -20,13 +20,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { PageProps } from "@/types";
 import { useForm } from "@inertiajs/react";
 import toast from "react-hot-toast";
 import { FaTrash } from "react-icons/fa";
 
-interface Props {
+interface Props extends PageProps {
     team: ITeam;
     members: IUserTeam[];
+    teamOwner: IUserTeam;
 }
 
 interface UserLayoutProps {
@@ -126,7 +128,9 @@ function KickApplicationForm({ team, member }: FormProps) {
     );
 }
 
-export default function TeamMember({ team, members }: Props) {
+export default function TeamMember({ auth, team, members, teamOwner }: Props) {
+    const hasOwnerRole = teamOwner.id === auth.user.id;
+
     return (
         <Card className="flex flex-col w-full lg:w-1/2">
             <CardHeader className="flex items-center justify-between">
@@ -145,9 +149,11 @@ export default function TeamMember({ team, members }: Props) {
                                 <TableHead className="w-[200px] text-center">
                                     Role
                                 </TableHead>
-                                <TableHead className="w-[200px] text-center">
-                                    Action
-                                </TableHead>
+                                {hasOwnerRole && (
+                                    <TableHead className="w-[200px] text-center">
+                                        Action
+                                    </TableHead>
+                                )}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -164,12 +170,14 @@ export default function TeamMember({ team, members }: Props) {
                                             {member.role}
                                         </h1>
                                     </TableCell>
-                                    <TableCell>
-                                        <KickApplicationForm
-                                            team={team}
-                                            member={member}
-                                        />
-                                    </TableCell>
+                                    {hasOwnerRole && (
+                                        <TableCell>
+                                            <KickApplicationForm
+                                                team={team}
+                                                member={member}
+                                            />
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>

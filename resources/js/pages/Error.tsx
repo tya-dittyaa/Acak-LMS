@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { NotFoundPathBreadcrumb } from "@/components/ui/path-breadcrumb";
+import { ErrorBreadcrumb } from "@/components/ui/path-breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import MainLayout from "@/layouts/Main/HomeLayout";
 import { PageProps } from "@/types";
@@ -63,7 +63,7 @@ export default function Error(props: Props) {
         <MainLayout auth={auth} title={title} hasPadding>
             <div className="flex flex-col gap-4 md:gap-8">
                 <div className="flex flex-col gap-5">
-                    <NotFoundPathBreadcrumb />
+                    <ErrorBreadcrumb title={title.replace(/^\d{3}: /, "")} />
 
                     <div className="flex items-center gap-3">
                         <MdErrorOutline className="size-6 md:size-7" />

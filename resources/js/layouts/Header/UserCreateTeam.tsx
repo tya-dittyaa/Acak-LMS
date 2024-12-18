@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useUserTeam } from "@/context/UserTeamProvider";
 import { cn } from "@/lib/utils";
+import { UserTeam } from "@/types";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
@@ -29,6 +31,7 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
     const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
     const iconInputRef = useRef<HTMLInputElement>(null);
 
+    const { updateTeam, setSelectedTeam } = useUserTeam();
     const { setData, errors, post, reset, processing } = useForm<ICreateTeam>({
         name: "",
         description: null,
@@ -40,10 +43,15 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
 
         post(route("api.teams.store"), {
             preserveScroll: true,
-            onSuccess: () => {
+            onSuccess: ({ props }) => {
+                const newTeam = props.auth.teams[
+                    props.auth.teams.length - 1
+                ] as UserTeam;
+                updateTeam(newTeam);
+                setSelectedTeam(newTeam);
+
                 toast.success("Team created successfully");
                 reset();
-                focusInputs();
                 setOpen(false);
             },
             onError: (error) => {
@@ -52,18 +60,11 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
         });
     };
 
-    const focusInputs = () => {
-        nameInputRef.current?.focus();
-        descriptionInputRef.current?.focus();
-        iconInputRef.current?.focus();
-    };
-
     return (
         <form
             onSubmit={handleSubmit}
             className={cn("grid items-start gap-4", className)}
         >
-            {/* Name Field */}
             <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -76,8 +77,6 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
                 />
                 <InputError message={errors.name} />
             </div>
-
-            {/* Description Field */}
             <div className="grid gap-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -88,8 +87,6 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
                 />
                 <InputError message={errors.description} />
             </div>
-
-            {/* Icon Field */}
             <div className="grid gap-2">
                 <Label htmlFor="icon">Icon</Label>
                 <Input
@@ -103,8 +100,6 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
                 />
                 <InputError message={errors.icon} />
             </div>
-
-            {/* Submit Button */}
             <Button
                 type="submit"
                 disabled={processing}

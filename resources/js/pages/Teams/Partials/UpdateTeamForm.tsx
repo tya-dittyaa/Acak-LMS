@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { MdDelete, MdEditSquare } from "react-icons/md";
 
@@ -187,40 +187,34 @@ interface FormFieldProps {
     onChange?: (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => void;
-    ref?: React.RefObject<HTMLInputElement>;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
-    id,
-    label,
-    type,
-    required,
-    defaultValue,
-    error,
-    onChange,
-    ref,
-}) => (
-    <div className="grid gap-2">
-        <Label htmlFor={id}>{label}</Label>
-        {type === "textarea" ? (
-            <Textarea
-                id={id}
-                required={required}
-                defaultValue={defaultValue || ""}
-                onChange={onChange}
-            />
-        ) : (
-            <Input
-                type="text"
-                id={id}
-                required={required}
-                defaultValue={defaultValue || ""}
-                onChange={onChange}
-                ref={ref}
-            />
-        )}
-        <InputError message={error} />
-    </div>
+const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
+    ({ id, label, type, required, defaultValue, error, onChange }, ref) => (
+        <div className="grid gap-2">
+            <Label htmlFor={id}>{label}</Label>
+            {type === "textarea" ? (
+                <Textarea
+                    id={id}
+                    required={required}
+                    defaultValue={defaultValue || ""}
+                    onChange={onChange}
+                />
+            ) : (
+                <Input
+                    type="text"
+                    id={id}
+                    required={required}
+                    defaultValue={defaultValue || ""}
+                    onChange={onChange}
+                    ref={ref}
+                />
+            )}
+            <InputError message={error} />
+        </div>
+    )
 );
+
+FormField.displayName = "FormField";
 
 export default UpdateTeamForm;

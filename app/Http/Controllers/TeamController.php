@@ -122,14 +122,16 @@ class TeamController extends Controller
     {
         // Validate the request
         $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'description' => ['nullable', 'string', 'max:255'],
+            'name' => ['required', 'string', 'min:3', 'max:100'],
+            'description' => ['nullable', 'string', 'min:3', 'max:255'],
             'icon' => ['nullable', 'file', 'image', 'max:2048', 'mimes:png,jpg,jpeg'],
         ], [
             'name.required' => 'The name field is required.',
             'name.string' => 'The name must be a string.',
+            'name.min' => 'The name must be at least 3 characters.',
             'name.max' => 'The name must not be greater than 100 characters.',
             'description.string' => 'The description must be a string.',
+            'description.min' => 'The description must be at least 3 characters.',
             'description.max' => 'The description must not be greater than 255 characters.',
             'icon.file' => 'The icon must be a valid file.',
             'icon.image' => 'The icon must be an image.',

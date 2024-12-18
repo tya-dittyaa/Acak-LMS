@@ -57,12 +57,11 @@ function SheetSidebar({ auth }: PageProps) {
 }
 
 export default function UserSidebar({ auth }: Props) {
-    const user = auth.user;
+    const user = auth?.user;
 
     return (
         <div className="flex items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-            {user && <SheetSidebar auth={auth} />}
-            {!user && <LoginButton />}
+            {user ? <SheetSidebar auth={auth} /> : <LoginButton />}
         </div>
     );
 }

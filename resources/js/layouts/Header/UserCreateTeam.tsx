@@ -38,14 +38,13 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
 
-        post(route("teams.store"), {
+        post(route("api.teams.store"), {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success("Team created successfully");
                 reset();
                 focusInputs();
                 setOpen(false);
-                window.location.reload();
             },
             onError: (error) => {
                 toast.error(error.message || "An error occurred");

@@ -1,0 +1,12 @@
+services:
+  acakmaya-lms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: acakmaya-lms.image
+    container_name: acakmaya-lms.container
+    restart: unless-stopped
+    ports:
+      - "6969:80"
+    env_file:
+      - .env

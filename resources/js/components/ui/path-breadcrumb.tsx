@@ -111,7 +111,7 @@ function PathBreadcrumb() {
     );
 }
 
-function NotFoundPathBreadcrumb() {
+function ErrorBreadcrumb({ title }: { title: string }) {
     return (
         <Breadcrumb>
             <BreadcrumbList>
@@ -122,52 +122,11 @@ function NotFoundPathBreadcrumb() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                    <BreadcrumbPage>Not Found</BreadcrumbPage>
+                    <BreadcrumbPage>{title}</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>
     );
 }
 
-function ServerErrorPathBreadcrumb() {
-    return (
-        <Breadcrumb>
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbPage>
-                        <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                    </BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage>Server Error</BreadcrumbPage>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
-    );
-}
-
-function UnauthorizedPathBreadcrumb() {
-    return (
-        <Breadcrumb>
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbPage>
-                        <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                    </BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage>Unauthorized</BreadcrumbPage>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
-    );
-}
-
-export {
-    NotFoundPathBreadcrumb,
-    PathBreadcrumb,
-    ServerErrorPathBreadcrumb,
-    UnauthorizedPathBreadcrumb,
-};
+export { ErrorBreadcrumb, PathBreadcrumb };

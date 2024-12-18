@@ -40,28 +40,22 @@ class TasksController extends Controller
         return redirect()->back()->with('status', 'Task created successfully.');
     }
 
-    public function updateAction($taskId, Request $request)
+    public function update(Request $request, Task $task)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'ActionId' => 'required|integer',
             ]);
 
-            $task = Tasks::findOrFail($taskId);
+            $task->update([
+                'ActionId' => $validated['ActionId'],
+                'UpdatedAt' => now(),
+            ]);
 
-            $task->ActionId = $request->ActionId;
-            $task->UpdatedAt = now();
-            $task->save();
-
-            return response()->json([
-                'Action' => $task->action ? $task->action->Action : 'Action updated',
-                'UpdatedAt' => $task->UpdatedAt,
-            ], 200);
-
+            return redirect()->back()->with('success', 'Task updated successfully!');
         } catch (\Exception $e) {
-            \Log::error('Error updating action: ' . $e->getMessage());
-
-            return response()->json(['error' => 'Internal Server Error'], 500);
+            \Log::error('Task update failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update task.');
         }
     }
 

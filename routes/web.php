@@ -52,6 +52,6 @@ Route::get('/teams',[App\Http\Controllers\TeamController::class, 'index']);
 Route::get('/teamDetails',[App\Http\Controllers\TeamDetailsController::class, 'index']);
 Route::get('/priority',[App\Http\Controllers\PriorityController::class, 'index']);
 Route::post('/tasks', [App\Http\Controllers\TasksController::class, 'store'])->name('tasks.store');
-Route::patch('/tasks/{taskId}/action', [TaskController::class, 'updateAction']);
+Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
 
 require __DIR__ . '/auth.php';

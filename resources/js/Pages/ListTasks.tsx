@@ -109,7 +109,7 @@ export default function ListTasks() {
     const [membersInTeam, setMembersInTeam] = useState<Member[]>([]);
     const [priorityName, setPriority] = useState<Priority[]>([]);
     const TeamId = 1; 
-    const { data, setData, post, reset, errors, processing } = useForm({
+    const { data, setData, post, reset, errors, processing, put } = useForm({
         Task: "",
         CreatedAt: new Date(),
         MemberId: "",
@@ -215,44 +215,28 @@ export default function ListTasks() {
         }
     };
 
-    const handleActionUpdate = async (taskId: number, actionId: number) => {
-        try {
-            const metaElement = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = metaElement ? metaElement.getAttribute('content') : null;
-
-            if (!csrfToken) throw new Error("CSRF token not found");
-
-            const response = await fetch(`/tasks/${taskId}/action`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
-                },
-                body: JSON.stringify({ ActionId: actionId }),
-            });
-            console.log("Request payload:", JSON.stringify({ ActionId: actionId }));
-
-            console.log("Response status:", response.status);
-
-            if (!response.ok) {
-                throw new Error("Failed to update action");
-            }
-
-            const updatedTask = await response.json();
-            console.log(updatedTask);
-
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
-                    task.TaskId === taskId
-                        ? { ...task, action: { Action: updatedTask.Action } }
-                        : task
-                )
-            );
-        } catch (error) {
-            console.error("Error updating task action:", error);
-            setError("Failed to update action. Please try again.");
-        }
+    const handleActionUpdate = (taskId: number, actionId: number) => {
+        setData("ActionId", actionId);
+        put(route("tasks.update", taskId), {
+            onSuccess: () => {
+                toast.success("Task action updated successfully!");
+                setTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                        task.TaskId === taskId
+                            ? { ...task, action: { ...task.action, Action: actionId === 3 ? "Completed" : "Deleted" } }
+                            : task
+                    )
+                );
+                window.location.reload();
+            },
+            onError: (errors) => {
+                toast.error("Failed to update task action.");
+                console.error(errors);
+            },
+        });
     };
+
+
 
     return (
         <MainLayout title="ListTasks">

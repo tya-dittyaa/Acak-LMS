@@ -39,9 +39,9 @@ export default function TeamInformation({ team }: Props) {
 
                     {/* Description */}
                     <div className="flex flex-col gap-4 w-full lg:w-3/4">
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 text-center md:text-left">
                             <h1 className="font-bold text-xl">{team.name}</h1>
-                            <h2 className="text-sm text-gray-500 flex items-center gap-2">
+                            <h2 className="text-sm text-gray-500 flex items-center gap-2 justify-center md:justify-start">
                                 <span>
                                     <strong>Code:</strong> {team.code}
                                 </span>

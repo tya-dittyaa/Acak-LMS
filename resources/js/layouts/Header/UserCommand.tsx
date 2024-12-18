@@ -6,6 +6,7 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
+import { useUserTeam } from "@/context/UserTeamProvider";
 
 interface CommandItemData {
     emoji: string;
@@ -18,7 +19,7 @@ interface CommandGroupData {
     items: CommandItemData[];
 }
 
-const commandGroups: CommandGroupData[] = [
+const baseCommandGroups: CommandGroupData[] = [
     {
         groupName: "Dashboard",
         items: [
@@ -42,6 +43,25 @@ const commandGroups: CommandGroupData[] = [
 ];
 
 export default function UserCommand() {
+    const { selectedTeam } = useUserTeam();
+
+    // Avoid adding duplicate "Team Details"
+    const commandGroups = baseCommandGroups.map((group) => ({
+        ...group,
+        items: group.items.slice(), // Ensure no mutation
+    }));
+
+    if (
+        selectedTeam &&
+        !commandGroups[0].items.find((item) => item.pageName === "Team Details")
+    ) {
+        commandGroups[0].items.push({
+            emoji: "👥",
+            pageName: "Team Details",
+            pageRoute: `/dashboard/teams/${selectedTeam.id}`,
+        });
+    }
+
     return (
         <Command className="rounded-lg border bg-muted/40">
             <CommandInput

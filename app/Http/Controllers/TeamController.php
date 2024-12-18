@@ -189,9 +189,9 @@ class TeamController extends Controller
     }
 
     /*
-    * Update the team details.
+    * Apply to join a team.
     */
-    public function join(Request $request)
+    public function apply(Request $request)
     {
         // Validate the request
         $validator = Validator::make($request->all(), [

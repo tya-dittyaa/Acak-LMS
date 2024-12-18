@@ -8,7 +8,7 @@ Route::post('/api/teams', [
   'store'
 ])->middleware(['auth', 'verified'])->name('api.teams.store');
 
-Route::post('/api/teams/join', [
+Route::post('/api/teams/apply', [
   TeamController::class,
-  'join'
-])->middleware(['auth', 'verified'])->name('api.teams.join');
+  'apply'
+])->middleware(['auth', 'verified'])->name('api.teams.apply');

@@ -26,12 +26,11 @@ const JoinTeamForm: React.FC<JoinTeamFormProps> = ({ setOpen, className }) => {
         e.preventDefault();
 
         try {
-            await post(route("api.teams.join"), {
+            await post(route("api.teams.apply"), {
                 preserveScroll: true,
                 onSuccess: () => {
                     toast.success("Request to join the team sent successfully");
                     setOpen(false);
-                    window.location.reload();
                 },
                 onError: (error) => {
                     toast.error(

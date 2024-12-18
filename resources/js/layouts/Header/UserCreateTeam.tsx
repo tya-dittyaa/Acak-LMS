@@ -45,7 +45,6 @@ const CreateTeamForm: React.FC<CreateTeamFormProps> = ({
                 reset();
                 focusInputs();
                 setOpen(false);
-                window.location.reload();
             },
             onError: (error) => {
                 toast.error(error.message || "An error occurred");

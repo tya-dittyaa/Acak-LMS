@@ -6,9 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { MdEditSquare } from "react-icons/md";
+import { MdDelete, MdEditSquare } from "react-icons/md";
 
 interface UpdateTeamFormProps {
     team: ITeam;
@@ -18,7 +18,7 @@ interface UpdateTeamFormProps {
 
 interface IUpdateTeam {
     name: string;
-    description?: string;
+    description?: string | null;
     icon: File | null;
 }
 
@@ -28,34 +28,61 @@ const UpdateTeamForm: React.FC<UpdateTeamFormProps> = ({
     className,
 }) => {
     const nameInputRef = useRef<HTMLInputElement>(null);
-    const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
-    const iconInputRef = useRef<HTMLInputElement>(null);
 
-    const { setData, errors, patch, reset, processing } = useForm<IUpdateTeam>({
+    const {
+        setData,
+        errors,
+        post,
+        delete: destroy,
+        reset,
+        processing,
+    } = useForm<IUpdateTeam>({
         name: team.name,
         description: team.description,
         icon: null,
     });
 
+    const [isDeleting, setIsDeleting] = useState(false);
+
     useEffect(() => {
-        // Focus on the name field when the form opens
         nameInputRef.current?.focus();
     }, []);
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
 
-        patch(route("api.teams.update", { teamId: team.id }), {
+        post(route("api.teams.update", { teamId: team.id }), {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success("Team updated successfully");
                 reset();
                 setOpen(false);
             },
-            onError: (error) => {
-                toast.error(error.message || "An error occurred");
-            },
+            onError: (error) =>
+                toast.error(error.message || "An error occurred"),
         });
+    };
+
+    const handleDeleteIcon = () => {
+        setIsDeleting(true);
+
+        destroy(route("api.teams.destroyIcon", { teamId: team.id }), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success("Team profile picture deleted successfully");
+                setData("icon", null);
+            },
+            onError: (error) =>
+                toast.error(
+                    error?.message || "Failed to delete profile picture"
+                ),
+            onFinish: () => setIsDeleting(false),
+        });
+    };
+
+    const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setData("icon", file);
     };
 
     return (
@@ -64,45 +91,67 @@ const UpdateTeamForm: React.FC<UpdateTeamFormProps> = ({
             className={cn("grid items-start gap-4", className)}
         >
             {/* Name Field */}
-            <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                    type="text"
-                    id="name"
-                    required
-                    autoComplete="name"
-                    ref={nameInputRef}
-                    defaultValue={team.name}
-                    onChange={(e) => setData("name", e.target.value)}
-                />
-                <InputError message={errors.name} />
-            </div>
+            <FormField
+                id="name"
+                label="Name"
+                type="text"
+                ref={nameInputRef}
+                required
+                defaultValue={team.name}
+                error={errors.name}
+                onChange={(e) => setData("name", e.target.value)}
+            />
 
             {/* Description Field */}
-            <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                    id="description"
-                    autoComplete="description"
-                    ref={descriptionInputRef}
-                    defaultValue={team.description || ""}
-                    onChange={(e) => setData("description", e.target.value)}
-                />
-                <InputError message={errors.description} />
-            </div>
+            <FormField
+                id="description"
+                label="Description"
+                type="textarea"
+                defaultValue={team.description || ""}
+                error={errors.description}
+                onChange={(e) => setData("description", e.target.value)}
+            />
 
             {/* Icon Field */}
             <div className="grid gap-2">
                 <Label htmlFor="icon">Icon</Label>
-                <Input
-                    type="file"
-                    id="icon"
-                    ref={iconInputRef}
-                    onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
-                        setData("icon", file);
-                    }}
-                />
+                {team.icon ? (
+                    <div className="flex flex-col items-center gap-4 mt-2">
+                        <img
+                            src={team.icon}
+                            alt="Current team icon"
+                            className="h-16 w-16 rounded-lg object-cover"
+                        />
+                        <div className="flex gap-2 w-full">
+                            <Input
+                                type="file"
+                                id="icon"
+                                onChange={handleIconChange}
+                            />
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={handleDeleteIcon}
+                                disabled={isDeleting}
+                                className="flex gap-2 items-center w-1/2"
+                            >
+                                {isDeleting ? (
+                                    <>
+                                        <Loader2 className="animate-spin" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <MdDelete />
+                                        Delete Icon
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <Input type="file" id="icon" onChange={handleIconChange} />
+                )}
                 <InputError message={errors.icon} />
             </div>
 
@@ -127,5 +176,51 @@ const UpdateTeamForm: React.FC<UpdateTeamFormProps> = ({
         </form>
     );
 };
+
+interface FormFieldProps {
+    id: string;
+    label: string;
+    type: "text" | "textarea";
+    required?: boolean;
+    defaultValue?: string | null;
+    error?: string;
+    onChange?: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => void;
+    ref?: React.RefObject<HTMLInputElement>;
+}
+
+const FormField: React.FC<FormFieldProps> = ({
+    id,
+    label,
+    type,
+    required,
+    defaultValue,
+    error,
+    onChange,
+    ref,
+}) => (
+    <div className="grid gap-2">
+        <Label htmlFor={id}>{label}</Label>
+        {type === "textarea" ? (
+            <Textarea
+                id={id}
+                required={required}
+                defaultValue={defaultValue || ""}
+                onChange={onChange}
+            />
+        ) : (
+            <Input
+                type="text"
+                id={id}
+                required={required}
+                defaultValue={defaultValue || ""}
+                onChange={onChange}
+                ref={ref}
+            />
+        )}
+        <InputError message={error} />
+    </div>
+);
 
 export default UpdateTeamForm;

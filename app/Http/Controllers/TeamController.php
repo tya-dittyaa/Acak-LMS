@@ -447,4 +447,43 @@ class TeamController extends Controller
 
         return redirect()->back()->with('status', 'Team updated successfully.');
     }
+
+    /**
+     * Delete a team's icon from Google Drive.
+     */
+    private function deleteTeamIcon(Team $team)
+    {
+        if ($team->is_gdrive_icon && $team->icon) {
+            $fileId = $this->driveService->getFileIdFromUrl($team->icon);
+            $this->driveService->deleteFile($fileId);
+
+            // Reset the icon fields in the database
+            $team->icon = null;
+            $team->is_gdrive_icon = false;
+            $team->save();
+        }
+    }
+
+    /**
+     * Handle the deletion of a team's icon.
+     */
+    public function destroyIcon(Request $request, $teamId)
+    {
+        $team = $this->getTeamOrFail($teamId);
+
+        if (!$team) {
+            return redirect()->back()->withErrors(['team' => 'Team not found.']);
+        }
+
+        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
+
+        if (!$teamMapping || $teamMapping->role_id !== $ownerRoleId) {
+            return redirect()->back()->withErrors(['permission' => 'Only the team owner can delete the team icon.']);
+        }
+
+        $this->deleteTeamIcon($team);
+
+        return redirect()->back()->with('status', 'Team icon deleted successfully.');
+    }
 }

@@ -9,6 +9,7 @@ interface UserTeamContextType {
     setSelectedTeam: (team: UserTeam | null) => void;
     removeTeam: (teamId: string) => void;
     updateTeam: (newTeam: UserTeam) => void;
+    clearStorage: () => void; // New function to clear local storage
 }
 
 const UserTeamContext = createContext<UserTeamContextType | undefined>(
@@ -37,6 +38,11 @@ function saveTeam(teamId: string): void {
 }
 
 function clearSavedTeam(): void {
+    localStorage.removeItem(LOCAL_STORAGE_SELECTED_TEAM_KEY);
+}
+
+function clearLocalStorage(): void {
+    localStorage.removeItem(LOCAL_STORAGE_TEAMS_KEY);
     localStorage.removeItem(LOCAL_STORAGE_SELECTED_TEAM_KEY);
 }
 
@@ -114,6 +120,13 @@ export const UserTeamProvider: React.FC<UserTeamProviderProps> = ({
         saveTeams(updatedTeams);
     };
 
+    // Clear local storage and reset state
+    const clearStorage = () => {
+        clearLocalStorage();
+        setCurrentTeams([]);
+        setSelectedTeamState(null);
+    };
+
     return (
         <UserTeamContext.Provider
             value={{
@@ -121,6 +134,7 @@ export const UserTeamProvider: React.FC<UserTeamProviderProps> = ({
                 setSelectedTeam,
                 removeTeam,
                 updateTeam,
+                clearStorage,
             }}
         >
             {children}

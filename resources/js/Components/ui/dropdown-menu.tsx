@@ -5,6 +5,7 @@ import {
     ChevronRightIcon,
     DotFilledIcon,
 } from "@radix-ui/react-icons";
+import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils";
 

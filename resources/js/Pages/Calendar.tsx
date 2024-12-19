@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MainLayout from "@/Layouts/Main/MainLayout";
 import Calendar from "react-calendar";
-
 import "react-calendar/dist/Calendar.css";
 
 interface Task {
@@ -39,7 +38,7 @@ export default function CalendarFunc() {
     ];
 
     useEffect(() => {
-        fetch("http://localhost:1234/basic.php")
+        fetch("/tasks")
             .then((response) => response.json())
             .then((data) => {
                 if (!data.error) {

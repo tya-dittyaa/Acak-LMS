@@ -90,6 +90,11 @@ export default function UserCommand() {
         });
     }
 
+    // Filter out groups with no items
+    const filteredCommandGroups = commandGroups.filter(
+        (group) => group.items.length > 0
+    );
+
     return (
         <Command className="rounded-lg border bg-muted/40">
             <CommandInput
@@ -98,7 +103,7 @@ export default function UserCommand() {
             />
             <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
-                {commandGroups.map((group, index) => (
+                {filteredCommandGroups.map((group, index) => (
                     <CommandGroup key={index} heading={group.groupName}>
                         {group.items.map((item, idx) => (
                             <CommandItem

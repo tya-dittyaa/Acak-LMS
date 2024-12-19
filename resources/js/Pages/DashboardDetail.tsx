@@ -97,7 +97,7 @@ export default function DashboardDetail() {
     };
 
     const chartOptions = {
-        indexAxis: "x" as const,
+        indexAxis: "y" as const,
         responsive: true,
         plugins: {
             legend: {
@@ -109,13 +109,34 @@ export default function DashboardDetail() {
             },
         },
         scales: {
-            y: {
+            x: {
                 max: 100,
                 ticks: {
                     callback: (value: any) => `${value}%`,
                 },
             },
         },
+    };
+
+    const [filter, setFilter] = useState<"all" | "completed" | "overdue">(
+        "all"
+    );
+
+    const filteredTasks = tasks.filter((task) => {
+        const today = new Date();
+        if (filter === "completed") {
+            return task.Deadline < today;
+        }
+        if (filter === "overdue") {
+            return task.Deadline < today && task.id > 5;
+        }
+        return true;
+    });
+
+    const getBackgroundColor = () => {
+        if (filter === "completed") return "bg-green-100";
+        if (filter === "overdue") return "bg-red-100";
+        return "bg-blue-100";
     };
 
     return (
@@ -136,28 +157,110 @@ export default function DashboardDetail() {
                             <p>Member 4</p>
                         </div>
                     </div>
-                    <h3 className="text-blue-800 font-bold text-lg">
-                        Task Overview
-                    </h3>
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-blue-300 p-4 rounded-lg shadow text-center">
-                            <h4 className="font-semibold">Total Tasks</h4>
-                            <p className="text-2xl">15</p>
-                        </div>
-                        <div className="bg-green-400 p-4 rounded-lg shadow text-center">
-                            <h4 className="font-semibold">Completed</h4>
-                            <p className="text-2xl">10</p>
-                        </div>
-                        <div className="bg-red-500 p-4 rounded-lg shadow text-center">
-                            <h4 className="font-semibold">Overdue</h4>
-                            <p className="text-2xl">5</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 className="text-blue-800 font-bold text-lg mb-4">
-                            Progress Chart
+                    <div className="lg:w-full p-6 flex flex-col space-y-6">
+                        <h3 className="text-blue-800 font-bold text-lg">
+                            Task Overview
                         </h3>
-                        <Bar data={chartData} options={chartOptions} />
+                        <div className="grid grid-cols-3 gap-4">
+                            <div
+                                className={`bg-blue-300 p-4 rounded-lg shadow text-center cursor-pointer ${
+                                    filter === "all"
+                                        ? "ring-4 ring-blue-500"
+                                        : ""
+                                }`}
+                                onClick={() => setFilter("all")}
+                            >
+                                <h4 className="font-semibold">Total Tasks</h4>
+                                <p className="text-2xl">15</p>
+                            </div>
+                            <div
+                                className={`bg-green-400 p-4 rounded-lg shadow text-center cursor-pointer ${
+                                    filter === "completed"
+                                        ? "ring-4 ring-green-500"
+                                        : ""
+                                }`}
+                                onClick={() => setFilter("completed")}
+                            >
+                                <h4 className="font-semibold">Completed</h4>
+                                <p className="text-2xl">10</p>
+                            </div>
+                            <div
+                                className={`bg-red-500 p-4 rounded-lg shadow text-center cursor-pointer ${
+                                    filter === "overdue"
+                                        ? "ring-4 ring-red-500"
+                                        : ""
+                                }`}
+                                onClick={() => setFilter("overdue")}
+                            >
+                                <h4 className="font-semibold">Overdue</h4>
+                                <p className="text-2xl">5</p>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="space-y-4 mt-6">
+                            <h4 className="text-blue-800 font-semibold text-lg">
+                                Progress
+                            </h4>
+                            <div className="flex items-center space-x-2">
+                                <span className="w-1/3 text-blue-700 font-medium text-sm">
+                                    Completed
+                                </span>
+                                <div className="w-full h-4 bg-gray-300 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-green-400"
+                                        style={{ width: "66%" }}
+                                    ></div>
+                                </div>
+                                <span className="w-1/3 text-right text-sm text-blue-700">
+                                    66%
+                                </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <span className="w-1/3 text-blue-700 font-medium text-sm">
+                                    Overdue
+                                </span>
+                                <div className="w-full h-4 bg-gray-300 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-red-400"
+                                        style={{ width: "33%" }}
+                                    ></div>
+                                </div>
+                                <span className="w-1/3 text-right text-sm text-blue-700">
+                                    33%
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <h4 className="text-blue-800 font-semibold text-lg mb-4">
+                                Filtered Tasks
+                            </h4>
+                            {filteredTasks.length > 0 ? (
+                                <ul
+                                    className={`space-y-4 p-4 rounded-lg ${getBackgroundColor()}`}
+                                >
+                                    {filteredTasks.map((task) => (
+                                        <li
+                                            key={task.id}
+                                            className="p-4 rounded-lg shadow hover:bg-opacity-80 cursor-pointer"
+                                        >
+                                            <strong>{task.Task}</strong>
+                                            <p className="text-sm text-gray-600">
+                                                Deadline:{" "}
+                                                {task.Deadline.toLocaleDateString(
+                                                    "en-US"
+                                                )}
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-blue-700">
+                                    No tasks available for the selected filter.
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -263,6 +366,12 @@ export default function DashboardDetail() {
 
                 {/* Right Section: Upcoming Deadlines */}
                 <div className="lg:w-1/3 p-6 flex flex-col space-y-6">
+                    <div>
+                        <h3 className="text-blue-800 font-bold text-lg mb-4">
+                            Progress Chart
+                        </h3>
+                        <Bar data={chartData} options={chartOptions} />
+                    </div>
                     <div>
                         <h3 className="text-blue-800 font-bold text-lg mb-4">
                             Upcoming Deadlines

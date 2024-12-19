@@ -1,185 +1,203 @@
-import React, { useState } from "react";
-import GaugeChart from "react-svg-gauge";
-import {
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-} from "recharts";
+import React, { useState, useEffect } from "react";
 import MainLayout from "@/Layouts/Main/MainLayout";
-import Link from "next/link";
+import Calendar from "react-calendar";
 
-// Define a Task interface
+import "react-calendar/dist/Calendar.css";
+
 interface Task {
-    name: string;
-    completed: boolean;
+    id: number;
+    Task: string;
+    Deadline: Date;
 }
 
-const data = [
-    {
-        name: "Project 1",
-        Budgeted: 400,
-        Tracked: 353,
-    },
-    {
-        name: "Project 2",
-        Budgeted: 300,
-        Tracked: 214,
-    },
-    {
-        name: "Project 3",
-        Budgeted: 450,
-        Tracked: 400,
-    },
-    {
-        name: "Project 4",
-        Budgeted: 350,
-        Tracked: 300,
-    },
-    {
-        name: "Project 5",
-        Budgeted: 420,
-        Tracked: 380,
-    },
-    {
-        name: "Project 6",
-        Budgeted: 380,
-        Tracked: 320,
-    },
-];
-
-// Task List Component
-const TaskList: React.FC<{
-    tasks: Task[];
-    onToggleComplete: (index: number) => void;
-}> = ({ tasks, onToggleComplete }) => {
-    return (
-        <div className="bg-white p-4 rounded-lg">
-            <h2 className="text-xl font-bold">Task List</h2>
-            <ul className="mt-4">
-                {tasks.map((task, index) => (
-                    <li
-                        key={index}
-                        className="flex items-center space-x-2 mb-2"
-                    >
-                        <input
-                            type="checkbox"
-                            checked={task.completed}
-                            onChange={() => onToggleComplete(index)}
-                            className="form-checkbox h-4 w-4 text-indigo-600"
-                        />
-                        <span>{task.name}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-};
-
 export default function DashboardDetail() {
-    const [tasks, setTasks] = useState<Task[]>([
-        { name: "Task 1", completed: false },
-        { name: "Task 2", completed: false },
-        { name: "Task 3", completed: false },
-        { name: "Task 4", completed: false },
-    ]);
+    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleToggleComplete = (index: number) => {
-        const updatedTasks = [...tasks];
-        updatedTasks[index].completed = !updatedTasks[index].completed;
-        setTasks(updatedTasks);
+    const tasks = [
+        {
+            id: 1,
+            Task: "Submit project report",
+            Deadline: new Date("2024-12-03"),
+        },
+        {
+            id: 2,
+            Task: "Team meeting for sprint planning",
+            Deadline: new Date("2024-12-05"),
+        },
+        {
+            id: 3,
+            Task: "Prepare presentation slides",
+            Deadline: new Date("2024-12-10"),
+        },
+        {
+            id: 4,
+            Task: "Test Task",
+            Deadline: new Date("2024-12-10"),
+        },
+    ];
+
+    useEffect(() => {
+        fetch("http://localhost:1234/basic.php")
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data.error) {
+                    const tasksWithDates = data.map((task: any) => ({
+                        ...task,
+                        Deadline: new Date(task.Deadline),
+                    }));
+                }
+            })
+            .catch((error) => console.error("Error fetching tasks:", error));
+    }, []);
+
+    const select = tasks.filter(
+        (task) => task.Deadline.toDateString() === date?.toDateString()
+    );
+
+    const hasTaskOnDate = (day: Date) => {
+        return tasks.some(
+            (task) => task.Deadline.toDateString() === day.toDateString()
+        );
+    };
+
+    const openModal = (task: Task) => {
+        setSelectedTask(task);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setSelectedTask(null);
+        setIsModalOpen(false);
     };
 
     return (
-        <MainLayout title="Dashboard Show Team Participated">
-            <div className="flex flex-col space-y-4">
-                <div className="p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold">Projects</h2>
-                        <select className="border rounded px-2 py-1">
-                            <option value="all">All</option>
-                            <option value="active">Active</option>
-                            <option value="completed">Completed</option>
-                        </select>
+        <MainLayout title="Dashboard">
+            <div className="flex min-h-dvh flex-wrap">
+                {/* Left Section: Team Logo */}
+                <div className="flex flex-col w-full lg:w-1/3 p-4">
+                    <div>
+                        <img src="" alt="Team Logo" className="w-full" />
+                        <ul className="mt-4">
+                            <li>Member A</li>
+                            <li>Member B</li>
+                            <li>Member C</li>
+                            <li>Member D</li>
+                        </ul>
                     </div>
                 </div>
 
-                <div className="bg-white p-4 rounded-lg">
-                    <h2 className="text-xl font-bold">Tasks</h2>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">353</p>
-                            <p className="text-gray-500">Total</p>
+                {/* Middle Section: Task List and Visualization */}
+                <div className="flex flex-col w-full lg:w-1/3 p-4">
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold mb-2">
+                            Task List
+                        </h3>
+                        <div className="space-y-2">
+                            <div className="bg-gray-100 p-4 rounded">
+                                Task 1
+                            </div>
+                            <div className="bg-gray-100 p-4 rounded">
+                                Task 2
+                            </div>
+                            <div className="bg-gray-100 p-4 rounded">
+                                Task 3
+                            </div>
                         </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">214</p>
-                            <p className="text-gray-500">Completed</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">139</p>
-                            <p className="text-gray-500">Incomplete</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">139</p>
-                            <p className="text-gray-500">Overdue</p>
-                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                            Visualization Charts
+                        </h3>
+                        <div className="bg-gray-200 h-40 rounded"></div>
                     </div>
                 </div>
 
-                <div className="bg-white p-4 rounded-lg">
-                    <h2 className="text-xl font-bold">Time (Hours)</h2>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">1,511.06</p>
-                            <p className="text-gray-500">Billable</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">330.54</p>
-                            <p className="text-gray-500">Nonbillable</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">1,727.93</p>
-                            <p className="text-gray-500">Invoiced</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold">113.67</p>
-                            <p className="text-gray-500">Not Invoiced</p>
-                        </div>
-                    </div>
+                {/* Right Section: Calendar */}
+                <div className="flex flex-col w-full lg:w-1/3 p-4">
+                    <Calendar
+                        value={date}
+                        onClickDay={setDate}
+                        tileContent={({ date, view }) =>
+                            view === "month" && hasTaskOnDate(date) ? (
+                                <div className="flex justify-center items-center mt-1">
+                                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                </div>
+                            ) : null
+                        }
+                        className="calendar-custom w-full max-w-2xl shadow-lg rounded-lg p-8 bg-white text-gray-800 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
+                    />
+
+                    {select.length > 0 ? (
+                        <ul className="list-disc list-inside text-gray-800 dark:text-gray-100 mt-4">
+                            {select.map((task) => (
+                                <div
+                                    key={task.id}
+                                    className="bg-gray-100 dark:bg-gray-800 w-full rounded-md shadow-md mb-4 cursor-pointer"
+                                    onClick={() => openModal(task)}
+                                >
+                                    <div className="flex flex-row space-x-4">
+                                        <div className="flex flex-col justify-center items-center pl-4 pr-4 border-r-2 border-gray-300 dark:border-gray-700">
+                                            <div className="text-gray-700 dark:text-gray-300 font-medium">
+                                                {task.Deadline.toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                        weekday: "long",
+                                                    }
+                                                )}
+                                            </div>
+                                            <div className="text-gray-900 dark:text-gray-100 text-lg font-bold">
+                                                {task.Deadline.getDate()}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col pt-4 pb-4 space-y-4">
+                                            <div className="text-gray-700 dark:text-gray-300 text-xl font-semibold">
+                                                Task Details
+                                            </div>
+                                            <div className="text-gray-900 dark:text-gray-100 text-lg">
+                                                {task.Task}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-700 dark:text-gray-300 mt-4">
+                            No tasks for this date.
+                        </p>
+                    )}
                 </div>
             </div>
 
-            <div className="flex flex-col space-y-4">
-                <div className="p-4 rounded-lg">
-                    <h2 className="text-xl font-bold mb-4">
-                        Budgeted vs. Tracked Hours by Project
-                    </h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart
-                            data={data}
-                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="Budgeted" fill="#8884d8" />
-                            <Bar dataKey="Tracked" fill="#82ca9d" />
-                        </BarChart>
-                    </ResponsiveContainer>
+            {/* Modal */}
+            {isModalOpen && selectedTask && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-11/12 md:w-1/2">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                            Task Details
+                        </h2>
+                        <p className="text-gray-700 dark:text-gray-300">
+                            <strong>Task:</strong> {selectedTask.Task}
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-300">
+                            <strong>Deadline:</strong>{" "}
+                            {selectedTask.Deadline.toLocaleDateString("en-US")}
+                        </p>
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                onClick={closeModal}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                {/* Task List Component */}
-                <TaskList
-                    tasks={tasks}
-                    onToggleComplete={handleToggleComplete}
-                />
-            </div>
+            )}
         </MainLayout>
     );
 }

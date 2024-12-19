@@ -22,10 +22,6 @@ Route::get('/listTasks', function () {
     return Inertia::render('ListTasks');
 });
 
-Route::get('/DBHome', function () {
-    return Inertia::render('DashboardAll');
-});
-
 Route::get('/DBDetail', function () {
     return Inertia::render('DashboardDetail');
 });

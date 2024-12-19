@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\TeamMapping;
 use App\Models\TeamRole;
 use App\Services\DriveService;
+use App\Services\TeamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -14,11 +15,12 @@ use Inertia\Inertia;
 
 class TeamController extends Controller
 {
-    protected $driveService;
+    protected $driveService, $teamService;
 
-    public function __construct(DriveService $driveService)
+    public function __construct(DriveService $driveService, TeamService $teamService)
     {
         $this->driveService = $driveService;
+        $this->teamService = $teamService;
     }
 
     /**
@@ -90,7 +92,7 @@ class TeamController extends Controller
             return Inertia::render('Error', ['status' => 403]);
         }
 
-        $teamMembers = $this->getTeamMembersWithDetails($teamId);
+        $teamMembers = $this->teamService->getTeamMembersWithDetails($teamId);
         $teamApplications = $this->getTeamApplicationsWithDetails($teamId, $guestRoleId);
 
         return inertia('Teams/Details/TeamDetails', [
@@ -225,32 +227,6 @@ class TeamController extends Controller
             'member_id' => $userId,
             'role_id' => $guestRoleId,
         ]);
-    }
-
-    private function getTeamMembersWithDetails($teamId)
-    {
-        $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
-
-        return DB::table('teams_mapping')
-            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
-            ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
-            ->select(
-                'users.id',
-                'users.name',
-                'users.avatar',
-                'users.email',
-                'teams_roles.name as role'
-            )
-            ->where('teams_mapping.teams_id', $teamId)
-            ->where('teams_mapping.role_id', '!=', $guestRoleId)
-            ->orderByRaw("
-                CASE 
-                    WHEN teams_roles.name = 'Owner' THEN 0 
-                    ELSE 1 
-                END, 
-                teams_mapping.joined_at ASC
-            ")
-            ->get();
     }
 
     private function getTeamApplicationsWithDetails($teamId, $guestRoleId)

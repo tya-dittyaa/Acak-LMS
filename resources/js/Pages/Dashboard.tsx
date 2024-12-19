@@ -1,17 +1,26 @@
-import PageTitle from "@/components/ui/page-title";
-import MainLayout from "@/layouts/Main/HomeLayout";
-import { PageProps } from "@/types";
-import { MdSpaceDashboard } from "react-icons/md";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head } from "@inertiajs/react";
 
-interface Props extends PageProps {}
-
-export default function Dashboard(props: Props) {
+export default function Dashboard() {
     return (
-        <MainLayout auth={props.auth} title="Dashboard" hasPadding>
-            <PageTitle
-                title="Dashboard"
-                icon={<MdSpaceDashboard className="size-6 md:size-7" />}
-            />
-        </MainLayout>
+        <AuthenticatedLayout
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    Dashboard
+                </h2>
+            }
+        >
+            <Head title="Dashboard" />
+
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="p-6 text-gray-900">
+                            You're logged in!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </AuthenticatedLayout>
     );
 }

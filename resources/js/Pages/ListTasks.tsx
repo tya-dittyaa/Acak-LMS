@@ -67,7 +67,6 @@ export function DatePickerDemo({ date, setDate }: DatePickerDemoProps) {
       </Popover>
     )
   }
-    
 
 interface Task {
     TaskId: number;
@@ -257,7 +256,9 @@ export default function ListTasks() {
                     <div className="ml-auto">
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button className="" variant="outline">Add Task</Button>
+                                <Button className="" variant="outline">
+                                    Add Task
+                                </Button>
                             </DialogTrigger>
 
                             <DialogContent className="sm:max-w-[425px]">
@@ -331,7 +332,6 @@ export default function ListTasks() {
                                                 setData("Deadline", value ? format(value, "yyyy-MM-dd") : "")
                                             }
                                         />
-
                                     </div>
                                     
                                 </div>

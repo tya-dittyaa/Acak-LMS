@@ -17,7 +17,7 @@ export default function TeamDetails(props: Props) {
     const { auth, team, teamApplications, teamMembers, teamOwner } = props;
 
     return (
-        <MainLayout auth={props.auth} title="Dashboard" hasPadding>
+        <MainLayout auth={props.auth} title="Team Details" hasPadding>
             <PageTitle
                 title="Team Details"
                 icon={<MdSpaceDashboard className="size-6 md:size-7" />}

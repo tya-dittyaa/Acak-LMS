@@ -488,4 +488,53 @@ class TeamController extends Controller
 
         return redirect()->back()->with('status', 'Team icon deleted successfully.');
     }
+
+    /**
+     * Display the dashboard with a list of teams the authenticated user has joined.
+     */
+    public function dashboard(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $teams = Team::select('teams.id', 'teams.name', 'teams.code', 'teams.icon', 'teams.description')
+            ->join('teams_mapping', 'teams.id', '=', 'teams_mapping.teams_id')
+            ->where('teams_mapping.member_id', $userId)
+            ->get()
+            ->map(function ($team) use ($userId) {
+                $members = DB::table('teams_mapping')
+                    ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+                    ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
+                    ->select(
+                        'users.id',
+                        'users.name',
+                        'users.email',
+                        'users.avatar',
+                        'teams_roles.name as role'
+                    )
+                    ->where('teams_mapping.teams_id', $team->id)
+                    ->where('teams_roles.name', '!=', 'Guest')
+                    ->orderByRaw("
+                CASE 
+                    WHEN users.id = ? THEN 0 
+                    WHEN teams_roles.name = 'Owner' THEN 1 
+                    ELSE 2 
+                END
+            ", [$userId])
+                    ->orderBy('users.name')
+                    ->get();
+
+                return [
+                    'id' => $team->id,
+                    'name' => $team->name,
+                    'code' => $team->code,
+                    'icon' => $team->icon,
+                    'description' => $team->description,
+                    'members' => $members,
+                ];
+            });
+
+        return Inertia::render('Dashboard/User/ListTeam', [
+            'teams' => $teams,
+        ]);
+    }
 }

@@ -1,66 +1,75 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+![AcakMaya-removebg-preview](https://github.com/user-attachments/assets/0c7dcaf6-3cea-4bab-a360-95127537b227)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# ACAKMAYA - Visualisasi Progress Pekerjaan
 
-## About Laravel
+ACAKMAYA adalah sebuah platform inovatif yang dirancang untuk memvisualisasikan progres pekerjaan secara real-time. Website ini bertujuan untuk memberikan kemudahan bagi pengguna dalam memantau dan mengelola berbagai tahapan pekerjaan yang sedang berjalan, agar pekerjaan dapat terlaksana lebih efisien dan terorganisir.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Visualisasi Dinamis**  
+  Menampilkan grafik, diagram alur, dan laporan yang menggambarkan status terkini dari setiap proyek atau tugas yang sedang dikerjakan.
+  
+- **Pemantauan Progres Real-Time**  
+  Menyediakan pembaruan otomatis yang akurat dan terkini tentang perkembangan pekerjaan, sehingga pengguna dapat segera mengetahui status terkini dan kendala yang ada.
+  
+- **Kolaborasi Tim**  
+  Memungkinkan anggota tim untuk berbagi informasi, memberikan umpan balik, dan berkomunikasi langsung di dalam platform untuk meningkatkan efektivitas kerja tim.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Pengelolaan Tugas**  
+  Pengguna dapat melacak dan mengelola tugas serta proyek dengan mudah, menentukan target dan mengevaluasi pencapaian progres dari setiap pekerjaan.
 
-## Learning Laravel
+## Keuntungan Menggunakan ACAKMaya
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Efisiensi Kerja**: Mempermudah pemantauan progres pekerjaan tanpa perlu memeriksa setiap detail secara manual.
+- **Transparansi**: Setiap anggota tim dapat melihat pembaruan secara real-time, meningkatkan keterbukaan informasi.
+- **Kolaborasi yang Lebih Baik**: Fitur komunikasi yang memudahkan anggota tim untuk berbagi ide dan feedback.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Data Anggota - Pekerjaan
+## Aditya Fajri - 2602113205 - Full Stack Developer - @
+- **Authentication (Login/Register/Verification Email)**
+- **Profile/Edit Profile Page**
+- **Header/Footer**
+- **Hosting**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Antony Laurence Cornelis - 2602067773 - Full Stack Developer
+- **Home Page**
+- **Dashboard Page**
+- **Calendar Page**
 
-## Laravel Sponsors
+## Charles Widjaja Tjung - 2602117512 - Full Stack Developer
+- **DB Administrator**
+- **Calendar Page**
+- **List Task**
+- **List Project**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Karina Dwinovera Mulia - 2602099680 - Full Stack Developer
+- **List Task**
+- **List Project**
+- **Team Details**
 
-### Premium Partners
+# SDG (Sustainable Development Goals)
+### SDG 4: **Quality Education** - **Pendidikan Berkualitas**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+ACAKMAYA mendukung SDG 4 dengan menyediakan platform yang efisien untuk memantau progres pekerjaan dan meningkatkan kolaborasi tim, yang relevan dengan pengembangan keterampilan dan pencapaian tujuan pendidikan dan pelatihan.
 
-## Contributing
+### Penerapan ACAKMAYA:
+1. **Akses Pendidikan dan Pelatihan:** Mempermudah pemantauan perkembangan peserta pelatihan atau pendidikan berbasis proyek.
+2. **Kualitas Pengajaran:** Fitur kolaborasi membantu pendidik memberi umpan balik yang meningkatkan pengalaman belajar.
+3. **Pembelajaran Berkelanjutan:** Mempermudah evaluasi terus-menerus untuk mendukung pembelajaran berbasis proyek.
+4. **Aksesibilitas Informasi:** Transparansi platform memastikan akses informasi yang sama untuk semua anggota tim.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Relevansi Tujuan SDG 4:
+- **Tujuan 4.3:** Meningkatkan akses ke pendidikan dan pelatihan berkualitas.
+- **Tujuan 4.4:** Menjembatani kesenjangan keterampilan dalam tenaga kerja.
+- **Tujuan 4.7:** Meningkatkan pemahaman keterampilan yang diperlukan untuk pencapaian tujuan berkelanjutan.
 
-## Code of Conduct
+ACAKMAYA berkontribusi pada pencapaian SDG 4 dengan memfasilitasi pengelolaan proyek yang efisien dan meningkatkan kolaborasi serta transparansi.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Link Domain
+https://acakmaya.dittyaa.my.id/
 
-## Security Vulnerabilities
+# Struktur ERD
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Tampilan Fitur
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

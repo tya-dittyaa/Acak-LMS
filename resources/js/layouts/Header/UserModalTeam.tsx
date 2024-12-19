@@ -18,7 +18,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { AiOutlineTeam } from "react-icons/ai";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoCreateOutline } from "react-icons/io5";
 import { useMediaQuery } from "usehooks-ts";
@@ -97,21 +96,18 @@ function TabsNavigation() {
     );
 }
 
-export default function UserModalTeam() {
+export default function UserModalTeam({
+    triggerButton,
+}: {
+    triggerButton: React.ReactNode;
+}) {
     const [open, setOpen] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 768px)");
-
-    const TriggerButton = (
-        <Button className="w-full gap-4 justify-center items-center">
-            <AiOutlineTeam />
-            Join or Create Team
-        </Button>
-    );
 
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>{TriggerButton}</DialogTrigger>
+                <DialogTrigger asChild>{triggerButton}</DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader className="flex flex-col gap-3">
                         <TeamTabs setOpen={setOpen} />
@@ -123,7 +119,7 @@ export default function UserModalTeam() {
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerTrigger asChild>{TriggerButton}</DrawerTrigger>
+            <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
             <DrawerContent>
                 <DrawerHeader className="flex flex-col gap-3 text-left">
                     <TeamTabs setOpen={setOpen} />

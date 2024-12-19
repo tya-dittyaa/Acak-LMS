@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
     Sheet,
@@ -9,6 +10,7 @@ import {
 import { UserAvatarSession } from "@/components/ui/user-avatar";
 import { LoginButton, LogoutButton } from "@/components/ui/user-button";
 import { PageProps } from "@/types";
+import { AiOutlineTeam } from "react-icons/ai";
 import UserChooseTeam from "./UserChooseTeam";
 import UserCommand from "./UserCommand";
 import UserModalTeam from "./UserModalTeam";
@@ -45,7 +47,14 @@ function SheetSidebar({ auth }: PageProps) {
                 <Separator />
                 <div className="flex flex-col gap-3">
                     <UserChooseTeam teams={teams} />
-                    <UserModalTeam />
+                    <UserModalTeam
+                        triggerButton={
+                            <Button className="w-full gap-4 justify-center items-center">
+                                <AiOutlineTeam />
+                                Join or Create Team
+                            </Button>
+                        }
+                    />
                 </div>
                 <Separator />
                 <UserCommand />

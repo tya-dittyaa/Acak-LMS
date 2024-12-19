@@ -31,6 +31,10 @@ const baseCommandGroups: CommandGroupData[] = [
         ],
     },
     {
+        groupName: "Teams",
+        items: [],
+    },
+    {
         groupName: "Settings",
         items: [
             {
@@ -53,12 +57,25 @@ export default function UserCommand() {
 
     if (
         selectedTeam &&
-        !commandGroups[0].items.find((item) => item.pageName === "Team Details")
+        !commandGroups[1].items.find(
+            (item) => item.pageName === "Team Dashboard"
+        )
     ) {
-        commandGroups[0].items.push({
-            emoji: "👥",
-            pageName: "Team Details",
+        commandGroups[1].items.push({
+            emoji: "📊",
+            pageName: "Team Dashboard",
             pageRoute: `/dashboard/teams/${selectedTeam.id}`,
+        });
+    }
+
+    if (
+        selectedTeam &&
+        !commandGroups[1].items.find((item) => item.pageName === "Team Details")
+    ) {
+        commandGroups[1].items.push({
+            emoji: "📝",
+            pageName: "Team Details",
+            pageRoute: `/dashboard/teams/${selectedTeam.id}/details`,
         });
     }
 

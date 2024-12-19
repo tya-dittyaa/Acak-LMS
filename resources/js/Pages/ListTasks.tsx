@@ -24,7 +24,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Theme, IconButton} from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { CalendarIcon, Check, PlusIcon, Trash } from "lucide-react";
+import { CalendarIcon, Check, PlusIcon, Trash, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { Calendar } from "@/Components/ui/calendar";
@@ -355,7 +355,6 @@ export default function ListTasks() {
                             <TableHead className="text-center">Priority</TableHead>
                             <TableHead className="text-center">Description</TableHead>
                             <TableHead className="text-center">Assigned To</TableHead>
-                            <TableHead className="text-center">Assigned By</TableHead>
                             <TableHead className="text-center">Due Date</TableHead>
                             <TableHead className="text-center">Status</TableHead>
                             <TableHead className="text-center">Actions</TableHead>
@@ -378,13 +377,6 @@ export default function ListTasks() {
                                     </Avatar>
                                 </div>
                             </TableCell>
-                            <TableCell>
-                            <div className="flex justify-center items-center gap-2">
-                                    <Avatar>
-                                        <AvatarImage className="size-9 rounded-full" src="https://i.pinimg.com/736x/ca/84/57/ca8457a0fb79de385747dc574ce0846d.jpg"/>
-                                    </Avatar>
-                                </div>
-                            </TableCell>
                             <TableCell className="font-bold">{task.Deadline || "-"}</TableCell>
                             <TableCell><Badge className="bg-green-100 text-green-700 rounded-xl" variant="secondary">{task.action?.Action || "N/A"}</Badge></TableCell>
                             <TableCell>
@@ -393,7 +385,7 @@ export default function ListTasks() {
                                         <Check width="20" height="20"/>
                                     </IconButton>
                                     <IconButton radius="large" size="3" color="crimson" variant="ghost" onClick={() => handleActionUpdate(task.TaskId, 2)}>
-                                        <Trash width="20" height="20"/>
+                                        <Pencil width="20" height="20"/>
                                     </IconButton>
                                 </div>
                             </TableCell>

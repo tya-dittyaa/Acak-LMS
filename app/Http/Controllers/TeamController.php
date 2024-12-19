@@ -93,7 +93,7 @@ class TeamController extends Controller
         $teamMembers = $this->getTeamMembersWithDetails($teamId);
         $teamApplications = $this->getTeamApplicationsWithDetails($teamId, $guestRoleId);
 
-        return inertia('Teams/TeamDetails', [
+        return inertia('Teams/Details/TeamDetails', [
             'team' => $team,
             'teamMembers' => $teamMembers,
             'teamApplications' => $teamApplications,

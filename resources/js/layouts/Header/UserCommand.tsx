@@ -70,6 +70,17 @@ export default function UserCommand() {
 
     if (
         selectedTeam &&
+        !commandGroups[1].items.find((item) => item.pageName === "Team Tasks")
+    ) {
+        commandGroups[1].items.push({
+            emoji: "📋",
+            pageName: "Team Tasks",
+            pageRoute: `/dashboard/teams/${selectedTeam.id}/tasks`,
+        });
+    }
+
+    if (
+        selectedTeam &&
         !commandGroups[1].items.find((item) => item.pageName === "Team Details")
     ) {
         commandGroups[1].items.push({

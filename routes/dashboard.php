@@ -9,6 +9,11 @@ Route::get('/dashboard', [
   'dashboard'
 ])->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/dashboard/teams/{teamId}/tasks', [
+  TeamController::class,
+  'tasks'
+])->middleware(['auth', 'verified'])->name('teams.tasks');
+
 Route::get('/dashboard/teams/{teamId}/details', [
   TeamController::class,
   'show'

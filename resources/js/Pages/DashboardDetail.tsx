@@ -1,8 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MainLayout from "@/Layouts/Main/MainLayout";
 import Calendar from "react-calendar";
-
 import "react-calendar/dist/Calendar.css";
+import { Bar } from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 interface Task {
     id: number;
@@ -38,20 +56,6 @@ export default function DashboardDetail() {
         },
     ];
 
-    useEffect(() => {
-        fetch("http://localhost:1234/basic.php")
-            .then((response) => response.json())
-            .then((data) => {
-                if (!data.error) {
-                    const tasksWithDates = data.map((task: any) => ({
-                        ...task,
-                        Deadline: new Date(task.Deadline),
-                    }));
-                }
-            })
-            .catch((error) => console.error("Error fetching tasks:", error));
-    }, []);
-
     const select = tasks.filter(
         (task) => task.Deadline.toDateString() === date?.toDateString()
     );
@@ -72,125 +76,254 @@ export default function DashboardDetail() {
         setIsModalOpen(false);
     };
 
+    const chartData = {
+        labels: ["Task 1", "Task 2", "Task 3"],
+        datasets: [
+            {
+                label: "Class Progress",
+                data: [60, 50, 70],
+                backgroundColor: "rgba(29, 78, 216, 0.5)",
+                borderColor: "rgba(29, 78, 216, 1)",
+                borderWidth: 1,
+            },
+            {
+                label: "Your Progress",
+                data: [80, 40, 100],
+                backgroundColor: "rgba(59, 130, 246, 0.5)",
+                borderColor: "rgba(59, 130, 246, 1)",
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const chartOptions = {
+        indexAxis: "x" as const,
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top" as const,
+            },
+            title: {
+                display: true,
+                text: "Class vs Your Progress",
+            },
+        },
+        scales: {
+            y: {
+                max: 100,
+                ticks: {
+                    callback: (value: any) => `${value}%`,
+                },
+            },
+        },
+    };
+
     return (
         <MainLayout title="Dashboard">
-            <div className="flex min-h-dvh flex-wrap">
-                {/* Left Section: Team Logo */}
-                <div className="flex flex-col w-full lg:w-1/3 p-4">
-                    <div>
-                        <img src="" alt="Team Logo" className="w-full" />
-                        <ul className="mt-4">
-                            <li>Member A</li>
-                            <li>Member B</li>
-                            <li>Member C</li>
-                            <li>Member D</li>
-                        </ul>
-                    </div>
-                </div>
-
-                {/* Middle Section: Task List and Visualization */}
-                <div className="flex flex-col w-full lg:w-1/3 p-4">
-                    <div className="mb-8">
-                        <h3 className="text-lg font-semibold mb-2">
-                            Task List
-                        </h3>
-                        <div className="space-y-2">
-                            <div className="bg-gray-100 p-4 rounded">
-                                Task 1
-                            </div>
-                            <div className="bg-gray-100 p-4 rounded">
-                                Task 2
-                            </div>
-                            <div className="bg-gray-100 p-4 rounded">
-                                Task 3
-                            </div>
+            <div className="flex flex-col lg:flex-row min-h-screen">
+                {/* Left Section: Task Summary & Progress */}
+                <div className="lg:w-1/3 p-6 flex flex-col space-y-6">
+                    <div className="flex flex-col justify-center items-center">
+                        <img
+                            src=""
+                            alt="Ahihuheho"
+                            className="w-32 h-32 mb-4 rounded-full shadow-lg bg-blue-300"
+                        />
+                        <div className="text-center text-blue-900 font-medium">
+                            <p>Member 1</p>
+                            <p>Member 2</p>
+                            <p>Member 3</p>
+                            <p>Member 4</p>
                         </div>
                     </div>
-
+                    <h3 className="text-blue-800 font-bold text-lg">
+                        Task Overview
+                    </h3>
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-blue-300 p-4 rounded-lg shadow text-center">
+                            <h4 className="font-semibold">Total Tasks</h4>
+                            <p className="text-2xl">15</p>
+                        </div>
+                        <div className="bg-green-400 p-4 rounded-lg shadow text-center">
+                            <h4 className="font-semibold">Completed</h4>
+                            <p className="text-2xl">10</p>
+                        </div>
+                        <div className="bg-red-500 p-4 rounded-lg shadow text-center">
+                            <h4 className="font-semibold">Overdue</h4>
+                            <p className="text-2xl">5</p>
+                        </div>
+                    </div>
                     <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                            Visualization Charts
+                        <h3 className="text-blue-800 font-bold text-lg mb-4">
+                            Progress Chart
                         </h3>
-                        <div className="bg-gray-200 h-40 rounded"></div>
+                        <Bar data={chartData} options={chartOptions} />
                     </div>
                 </div>
 
-                {/* Right Section: Calendar */}
-                <div className="flex flex-col w-full lg:w-1/3 p-4">
-                    <Calendar
-                        value={date}
-                        onClickDay={setDate}
-                        tileContent={({ date, view }) =>
-                            view === "month" && hasTaskOnDate(date) ? (
-                                <div className="flex justify-center items-center mt-1">
-                                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                </div>
-                            ) : null
-                        }
-                        className="calendar-custom w-full max-w-2xl shadow-lg rounded-lg p-8 bg-white text-gray-800 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
-                    />
+                {/* Center Section: Calendar */}
+                <div className="lg:w-2/7 p-6">
+                    <h3 className="text-blue-800 font-bold text-lg mb-4">
+                        Task Calendar
+                    </h3>
+                    <div className="flex flex-col lg: w-full">
+                        <style>{`
+                            .calendar-custom {
+                        width: 500px;
+                    }
 
+                    .calendar-custom .react-calendar__navigation {
+                        background: transparent;
+                        color: inherit;
+                        border: none;
+                    }
+
+                    .calendar-custom .react-calendar__tile {
+                        background: transparent;
+                        color: inherit;
+                        border-radius: 4px;
+                        transition: background-color 0.3s, color 0.3s;
+                    }
+
+                    .calendar-custom .react-calendar__tile:enabled:hover {
+                        background-color: rgba(37, 99, 235, 0.1);
+                        color: inherit;
+                    }
+
+                    .calendar-custom .react-calendar__tile--active {
+                        background-color: #2563eb;
+                        color: #fff;
+                    }
+
+                    .calendar-custom .react-calendar__tile--active:enabled:hover {
+                        background-color: #1d4ed8;
+                        color: #fff;
+                    }
+
+                    .calendar-custom .react-calendar__tile--now {
+                        border: 2px solid #2563eb;
+                    }
+
+                    .dark .calendar-custom .react-calendar__navigation {
+                        color: #d1d5db;
+                    }
+
+                    .dark .calendar-custom .react-calendar__navigation button:enabled:hover {
+                        background-color: rgba(255, 255, 255, 0.1);
+                        color: #f9fafb; 
+                    }
+
+                    .dark .calendar-custom .react-calendar__tile {
+                        color: #d1d5db; 
+                    }
+
+                    .dark .calendar-custom .react-calendar__tile:enabled:hover {
+                        background-color: rgba(255, 255, 255, 0.1);
+                        color: #f9fafb;
+                    }
+                        `}</style>
+                        <Calendar
+                            value={date}
+                            onClickDay={setDate}
+                            tileContent={({ date, view }) =>
+                                view === "month" && hasTaskOnDate(date) ? (
+                                    <div className="flex justify-center items-center mt-1">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    </div>
+                                ) : null
+                            }
+                            className="calendar-custom w-full max-w-2xl shadow-lg rounded-lg p-8 bg-white text-gray-800 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
+                        />
+                    </div>
                     {select.length > 0 ? (
-                        <ul className="list-disc list-inside text-gray-800 dark:text-gray-100 mt-4">
+                        <ul className="mt-6 space-y-4">
                             {select.map((task) => (
-                                <div
+                                <li
                                     key={task.id}
-                                    className="bg-gray-100 dark:bg-gray-800 w-full rounded-md shadow-md mb-4 cursor-pointer"
+                                    className="bg-blue-300 p-4 rounded-lg shadow hover:bg-blue-400 cursor-pointer"
                                     onClick={() => openModal(task)}
                                 >
-                                    <div className="flex flex-row space-x-4">
-                                        <div className="flex flex-col justify-center items-center pl-4 pr-4 border-r-2 border-gray-300 dark:border-gray-700">
-                                            <div className="text-gray-700 dark:text-gray-300 font-medium">
-                                                {task.Deadline.toLocaleDateString(
-                                                    "en-US",
-                                                    {
-                                                        weekday: "long",
-                                                    }
-                                                )}
-                                            </div>
-                                            <div className="text-gray-900 dark:text-gray-100 text-lg font-bold">
-                                                {task.Deadline.getDate()}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-col pt-4 pb-4 space-y-4">
-                                            <div className="text-gray-700 dark:text-gray-300 text-xl font-semibold">
-                                                Task Details
-                                            </div>
-                                            <div className="text-gray-900 dark:text-gray-100 text-lg">
-                                                {task.Task}
-                                            </div>
-                                        </div>
+                                    <div className="font-semibold text-blue-900">
+                                        {task.Task}
                                     </div>
-                                </div>
+                                    <div className="text-sm text-blue-700">
+                                        {task.Deadline.toLocaleDateString(
+                                            "en-US"
+                                        )}
+                                    </div>
+                                </li>
                             ))}
                         </ul>
                     ) : (
-                        <p className="text-gray-700 dark:text-gray-300 mt-4">
+                        <p className="text-blue-800 mt-6">
                             No tasks for this date.
                         </p>
                     )}
                 </div>
+
+                {/* Right Section: Upcoming Deadlines */}
+                <div className="lg:w-1/3 p-6 flex flex-col space-y-6">
+                    <div>
+                        <h3 className="text-blue-800 font-bold text-lg mb-4">
+                            Upcoming Deadlines
+                        </h3>
+                        <ul className="space-y-4">
+                            {tasks
+                                .filter((task) => {
+                                    const today = new Date();
+                                    const deadline = new Date(task.Deadline);
+                                    return (
+                                        deadline >= today &&
+                                        deadline <=
+                                            new Date(
+                                                today.setDate(
+                                                    today.getDate() + 7
+                                                )
+                                            )
+                                    );
+                                })
+                                .map((task) => (
+                                    <li
+                                        key={task.id}
+                                        className="bg-blue-300 p-4 rounded-lg shadow"
+                                    >
+                                        <strong>{task.Task}</strong> -{" "}
+                                        {task.Deadline.toLocaleDateString(
+                                            "en-US"
+                                        )}
+                                    </li>
+                                ))}
+                        </ul>
+                    </div>
+                    <div className="bg-blue-500 text-white p-4 rounded-lg shadow-md">
+                        ⚠️ 3 tasks are overdue! Please review them.
+                    </div>
+                </div>
             </div>
+
+            {/* Floating Add Task Button */}
+            <button className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700">
+                Add Task
+            </button>
 
             {/* Modal */}
             {isModalOpen && selectedTask && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-11/12 md:w-1/2">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                <div className="fixed inset-0 bg-blue-900 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/2">
+                        <h2 className="text-xl font-bold text-blue-800 mb-4">
                             Task Details
                         </h2>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-blue-700">
                             <strong>Task:</strong> {selectedTask.Task}
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-blue-700">
                             <strong>Deadline:</strong>{" "}
                             {selectedTask.Deadline.toLocaleDateString("en-US")}
                         </p>
                         <div className="mt-6 flex justify-end">
                             <button
                                 onClick={closeModal}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                             >
                                 Close
                             </button>

@@ -38,7 +38,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
-        Schema::create('socialite', function (Blueprint $table) {
+        Schema::create('socialites', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->index();
             $table->string('provider_id');
@@ -57,6 +57,6 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
-        Schema::dropIfExists('socialite');
+        Schema::dropIfExists('socialites');
     }
 };

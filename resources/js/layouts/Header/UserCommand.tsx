@@ -70,6 +70,17 @@ export default function UserCommand() {
 
     if (
         selectedTeam &&
+        !commandGroups[1].items.find((item) => item.pageName === "Team Tasks")
+    ) {
+        commandGroups[1].items.push({
+            emoji: "📋",
+            pageName: "Team Tasks",
+            pageRoute: `/dashboard/teams/${selectedTeam.id}/tasks`,
+        });
+    }
+
+    if (
+        selectedTeam &&
         !commandGroups[1].items.find((item) => item.pageName === "Team Details")
     ) {
         commandGroups[1].items.push({
@@ -79,6 +90,11 @@ export default function UserCommand() {
         });
     }
 
+    // Filter out groups with no items
+    const filteredCommandGroups = commandGroups.filter(
+        (group) => group.items.length > 0
+    );
+
     return (
         <Command className="rounded-lg border bg-muted/40">
             <CommandInput
@@ -87,7 +103,7 @@ export default function UserCommand() {
             />
             <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
-                {commandGroups.map((group, index) => (
+                {filteredCommandGroups.map((group, index) => (
                     <CommandGroup key={index} heading={group.groupName}>
                         {group.items.map((item, idx) => (
                             <CommandItem

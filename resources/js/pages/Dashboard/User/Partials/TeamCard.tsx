@@ -24,7 +24,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team }) => {
                             className="h-14 w-14 rounded-lg"
                             src={team.icon ?? ""}
                         />
-                        <AvatarFallback className="h-10 w-10 rounded-lg text-4xl">
+                        <AvatarFallback className="h-14 w-14 rounded-lg text-3xl">
                             {team.name.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>

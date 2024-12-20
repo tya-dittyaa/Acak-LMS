@@ -54,7 +54,7 @@ class SocialiteController extends Controller
         $this->updateAvatarIfNeeded($user, $socialUser->getAvatar());
       }
 
-      $user->socialite()->create([
+      $user->socialites()->create([
         'provider_id' => $socialUser->getId(),
         'provider_name' => $provider,
         'provider_token' => $socialUser->token,

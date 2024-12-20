@@ -50,7 +50,7 @@ class TaskController extends Controller
             'users.name',
             'users.email',
             'users.avatar',
-            'teams_roles.name as role_name'
+            'teams_roles.name as role'
           )
           ->where('task_assignees.task_id', $task->id)
           ->where('teams_roles.name', '!=', 'Guest')
@@ -58,7 +58,7 @@ class TaskController extends Controller
 
         return [
           'id' => $task->id,
-          'name' => $task->title,
+          'title' => $task->title,
           'description' => $task->description,
           'priority' => $task->priority,
           'assigned_to' => $assignees,

@@ -26,7 +26,7 @@ class Task extends Model
      */
     public function team()
     {
-        return $this->belongsTo(Team::class, 'team_id');
+        return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
     /**
@@ -35,6 +35,7 @@ class Task extends Model
     public function assignees()
     {
         return $this->belongsToMany(User::class, 'task_assignees', 'task_id', 'user_id')
+            ->using(TaskAssignee::class)
             ->withTimestamps();
     }
 }

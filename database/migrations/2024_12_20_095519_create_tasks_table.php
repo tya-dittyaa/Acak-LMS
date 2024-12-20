@@ -26,8 +26,8 @@ return new class extends Migration
 
         Schema::create('task_assignees', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('task_id'); // Relasi ke tasks
-            $table->uuid('user_id'); // Relasi ke users (member yang di-assign)
+            $table->uuid('task_id');
+            $table->uuid('user_id');
             $table->timestamps();
 
             $table->foreign('task_id')->references('id')->on('tasks')->cascadeOnDelete();

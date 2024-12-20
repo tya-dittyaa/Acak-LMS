@@ -34,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function socialites()
     {
-        return $this->hasMany(Socialite::class, 'user_id');
+        return $this->hasMany(Socialite::class, 'user_id', 'id');
     }
 
     /**
@@ -53,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tasks()
     {
         return $this->belongsToMany(Task::class, 'task_assignees', 'user_id', 'task_id')
+            ->using(TaskAssignee::class)
             ->withTimestamps();
     }
 }

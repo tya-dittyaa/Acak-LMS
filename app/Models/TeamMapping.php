@@ -13,10 +13,10 @@ class TeamMapping extends Model
   protected $table = 'teams_mapping';
 
   protected $fillable = [
-    'teams_id',
+    'team_id',
     'member_id',
     'role_id',
-    'joined_at'
+    'joined_at',
   ];
 
   /**
@@ -24,7 +24,7 @@ class TeamMapping extends Model
    */
   public function team()
   {
-    return $this->belongsTo(Team::class, 'teams_id');
+    return $this->belongsTo(Team::class, 'team_id');
   }
 
   /**

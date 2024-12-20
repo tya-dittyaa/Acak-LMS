@@ -20,8 +20,11 @@ class Socialite extends Model
     'provider_refresh_token',
   ];
 
+  /**
+   * Get the user associated with this socialite account.
+   */
   public function user()
   {
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class, 'user_id');
   }
 }

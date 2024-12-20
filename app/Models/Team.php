@@ -16,7 +16,7 @@ class Team extends Model
     'name',
     'description',
     'icon',
-    'is_gdrive_icon'
+    'is_gdrive_icon',
   ];
 
   /**
@@ -24,6 +24,14 @@ class Team extends Model
    */
   public function members()
   {
-    return $this->hasMany(TeamMapping::class, 'teams_id');
+    return $this->hasMany(TeamMapping::class, 'team_id');
+  }
+
+  /**
+   * Get all tasks associated with the team.
+   */
+  public function tasks()
+  {
+    return $this->hasMany(Task::class, 'team_id');
   }
 }

@@ -10,7 +10,7 @@ class TeamService
   public function getTeamsForUser($userId)
   {
     return DB::table("teams")
-      ->join("teams_mapping", "teams.id", "=", "teams_mapping.teams_id")
+      ->join("teams_mapping", "teams.id", "=", "teams_mapping.team_id")
       ->join("teams_roles", "teams_mapping.role_id", "=", "teams_roles.id")
       ->where("teams_mapping.member_id", $userId)
       ->where("teams_roles.name", "!=", "Guest")
@@ -32,7 +32,7 @@ class TeamService
         'users.email',
         'teams_roles.name as role'
       )
-      ->where('teams_mapping.teams_id', $teamId)
+      ->where('teams_mapping.team_id', $teamId)
       ->where('teams_mapping.role_id', '!=', $guestRoleId)
       ->orderByRaw("
               CASE 

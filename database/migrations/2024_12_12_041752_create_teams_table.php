@@ -29,13 +29,13 @@ return new class extends Migration
 
         Schema::create('teams_mapping', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('teams_id');
+            $table->uuid('team_id');
             $table->uuid('member_id');
             $table->uuid('role_id');
             $table->timestamp('joined_at');
             $table->timestamps();
 
-            $table->foreign('teams_id')->references('id')->on('teams')->cascadeOnDelete();
+            $table->foreign('team_id')->references('id')->on('teams')->cascadeOnDelete();
             $table->foreign('member_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('role_id')->references('id')->on('teams_roles')->cascadeOnDelete();
         });

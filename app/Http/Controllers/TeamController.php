@@ -69,7 +69,7 @@ class TeamController extends Controller
      */
     private function getUserTeamMapping($teamId, $userId)
     {
-        return TeamMapping::where('teams_id', $teamId)
+        return TeamMapping::where('team_id', $teamId)
             ->where('member_id', $userId)
             ->first();
     }
@@ -193,7 +193,7 @@ class TeamController extends Controller
         $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
 
         TeamMapping::create([
-            'teams_id' => $teamId,
+            'team_id' => $teamId,
             'member_id' => $userId,
             'role_id' => $ownerRoleId,
             'joined_at' => now(),
@@ -213,7 +213,7 @@ class TeamController extends Controller
 
     private function isUserAlreadyMember($teamId, $userId): bool
     {
-        return TeamMapping::where('teams_id', $teamId)
+        return TeamMapping::where('team_id', $teamId)
             ->where('member_id', $userId)
             ->exists();
     }
@@ -223,7 +223,7 @@ class TeamController extends Controller
         $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
 
         TeamMapping::create([
-            'teams_id' => $teamId,
+            'team_id' => $teamId,
             'member_id' => $userId,
             'role_id' => $guestRoleId,
         ]);
@@ -241,7 +241,7 @@ class TeamController extends Controller
                 'users.email',
                 DB::raw("'Guest' as role")
             )
-            ->where('teams_mapping.teams_id', $teamId)
+            ->where('teams_mapping.team_id', $teamId)
             ->where('teams_mapping.role_id', $guestRoleId)
             ->get();
     }
@@ -250,7 +250,7 @@ class TeamController extends Controller
     {
         return DB::table('teams_mapping')
             ->join('users', 'teams_mapping.member_id', '=', 'users.id')
-            ->where('teams_mapping.teams_id', $teamId)
+            ->where('teams_mapping.team_id', $teamId)
             ->where('teams_mapping.role_id', TeamRole::where('name', 'Owner')->first()->id)
             ->select(
                 'users.id',
@@ -372,7 +372,7 @@ class TeamController extends Controller
         }
 
         DB::transaction(function () use ($team) {
-            TeamMapping::where('teams_id', $team->id)->delete();
+            TeamMapping::where('team_id', $team->id)->delete();
 
             if ($team->is_gdrive_icon && $team->icon) {
                 $fileId = $this->driveService->getFileIdFromUrl($team->icon);
@@ -473,7 +473,7 @@ class TeamController extends Controller
         $userId = $request->user()->id;
 
         $teams = Team::select('teams.id', 'teams.name', 'teams.code', 'teams.icon', 'teams.description')
-            ->join('teams_mapping', 'teams.id', '=', 'teams_mapping.teams_id')
+            ->join('teams_mapping', 'teams.id', '=', 'teams_mapping.team_id')
             ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
             ->where('teams_mapping.member_id', $userId)
             ->whereIn('teams_roles.name', ['Owner', 'Member'])
@@ -489,7 +489,7 @@ class TeamController extends Controller
                         'users.avatar',
                         'teams_roles.name as role'
                     )
-                    ->where('teams_mapping.teams_id', $team->id)
+                    ->where('teams_mapping.team_id', $team->id)
                     ->where('teams_roles.name', '!=', 'Guest')
                     ->orderByRaw("
                         CASE 

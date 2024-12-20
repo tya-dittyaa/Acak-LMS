@@ -3,7 +3,9 @@ import MainLayout from "@/layouts/Main/HomeLayout";
 import { PageProps } from "@/types";
 import { FaTasks } from "react-icons/fa";
 
-interface props extends PageProps {}
+interface props extends PageProps {
+    tasks: ITaskData[];
+}
 
 export default function TaskLayout(props: props) {
     return (

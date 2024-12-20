@@ -10,7 +10,7 @@ class Socialite extends Model
 {
   use HasFactory, HasUuids;
 
-  protected $table = 'socialite';
+  protected $table = 'socialites';
 
   protected $fillable = [
     'user_id',

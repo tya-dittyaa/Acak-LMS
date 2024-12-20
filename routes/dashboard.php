@@ -1,15 +1,14 @@
 <?php
 
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/dashboard', [
-  TeamController::class,
-  'dashboard'
-])->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
+  Route::get('/', [TeamController::class, 'dashboard'])->name('dashboard');
 
-Route::get('/dashboard/teams/{teamId}/details', [
-  TeamController::class,
-  'show'
-])->middleware(['auth', 'verified'])->name('teams.show');
+  Route::prefix('teams/{teamId}')->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/details', [TeamController::class, 'show'])->name('teams.show');
+  });
+});

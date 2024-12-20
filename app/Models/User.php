@@ -10,14 +10,8 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasUuids;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -25,36 +19,41 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Get the socialite accounts associated with the user.
      */
-    protected function casts(): array
+    public function socialites()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Socialite::class, 'user_id', 'id');
     }
 
     /**
-     * Get the socialite associated with the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the teams the user is part of.
      */
-    public function socialite()
+    public function teams()
     {
-        return $this->hasMany(Socialite::class);
+        return $this->belongsToMany(Team::class, 'teams_mapping', 'user_id', 'team_id')
+            ->withPivot('role_id', 'joined_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the tasks assigned to the user.
+     */
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class, 'task_assignees', 'user_id', 'task_id')
+            ->using(TaskAssignee::class)
+            ->withTimestamps();
     }
 }

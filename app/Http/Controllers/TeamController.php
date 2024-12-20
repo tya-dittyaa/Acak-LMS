@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\TeamMapping;
 use App\Models\TeamRole;
 use App\Services\DriveService;
+use App\Services\TeamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -14,62 +15,12 @@ use Inertia\Inertia;
 
 class TeamController extends Controller
 {
-    protected $driveService;
+    protected $driveService, $teamService;
 
-    public function __construct(DriveService $driveService)
+    public function __construct(DriveService $driveService, TeamService $teamService)
     {
         $this->driveService = $driveService;
-    }
-
-    /**
-     * Generate a unique team code.
-     *
-     * @return string
-     */
-    private function generateUniqueTeamCode(): string
-    {
-        do {
-            $code = $this->randomTeamCode();
-        } while (Team::where('code', $code)->exists());
-
-        return $code;
-    }
-
-    /**
-     * Generate a random alphanumeric code.
-     *
-     * @return string
-     */
-    private function randomTeamCode(): string
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $length = 8;
-        return substr(str_shuffle(str_repeat($characters, $length)), 0, $length);
-    }
-
-    /**
-     * Validate and retrieve the requested team.
-     *
-     * @param int $teamId
-     * @return Team|null
-     */
-    private function getTeamOrFail($teamId)
-    {
-        return Team::find($teamId);
-    }
-
-    /**
-     * Retrieve a user's role in a team.
-     *
-     * @param int $teamId
-     * @param int $userId
-     * @return TeamMapping|null
-     */
-    private function getUserTeamMapping($teamId, $userId)
-    {
-        return TeamMapping::where('teams_id', $teamId)
-            ->where('member_id', $userId)
-            ->first();
+        $this->teamService = $teamService;
     }
 
     /**
@@ -77,27 +28,27 @@ class TeamController extends Controller
      */
     public function show(Request $request, $teamId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
 
         if (!$team) {
             return Inertia::render('Error', ['status' => 404]);
         }
 
         $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
 
         if (!$teamMapping || $teamMapping->role_id === $guestRoleId) {
             return Inertia::render('Error', ['status' => 403]);
         }
 
-        $teamMembers = $this->getTeamMembersWithDetails($teamId);
-        $teamApplications = $this->getTeamApplicationsWithDetails($teamId, $guestRoleId);
+        $teamMembers = $this->teamService->getTeamMembersWithDetails($teamId);
+        $teamApplications = $this->teamService->getTeamApplicationsWithDetails($teamId, $guestRoleId);
 
-        return inertia('Teams/TeamDetails', [
+        return inertia('Teams/Details/TeamDetails', [
             'team' => $team,
             'teamMembers' => $teamMembers,
             'teamApplications' => $teamApplications,
-            'teamOwner' => $this->getTeamOwner($teamId),
+            'teamOwner' => $this->teamService->getTeamOwner($teamId),
         ]);
     }
 
@@ -112,11 +63,11 @@ class TeamController extends Controller
             return redirect()->back()->withErrors(['name' => 'This team name is already in use. Please choose another name.']);
         }
 
-        $team = $this->createTeam($request);
-        $this->assignOwnerRole($team->id, $request->user()->id);
+        $team = $this->teamService->createTeam($request);
+        $this->teamService->assignOwnerRole($team->id, $request->user()->id);
 
         if ($request->hasFile('icon')) {
-            $this->uploadTeamIcon($team, $request->file('icon'));
+            $this->teamService->uploadTeamIcon($team, $request->file('icon'));
         }
 
         return redirect()->back()
@@ -139,11 +90,11 @@ class TeamController extends Controller
 
         $team = Team::where('code', $request->team_code)->first();
 
-        if ($this->isUserAlreadyMember($team->id, $request->user()->id)) {
+        if ($this->teamService->isUserAlreadyMember($team->id, $request->user()->id)) {
             return redirect()->back()->withErrors(['team_code' => 'You have already joined or applied to this team.']);
         }
 
-        $this->createGuestRole($team->id, $request->user()->id);
+        $this->teamService->createGuestRole($team->id, $request->user()->id);
 
         return redirect()->back()->with('status', 'Your application to join the team has been successfully sent.');
     }
@@ -175,129 +126,18 @@ class TeamController extends Controller
         ];
     }
 
-    private function createTeam(Request $request): Team
-    {
-        $team = new Team();
-        $team->name = $request->name;
-        $team->description = $request->description;
-        $team->code = $this->generateUniqueTeamCode();
-        $team->save();
-
-        return $team;
-    }
-
-    private function assignOwnerRole($teamId, $userId)
-    {
-        $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
-
-        TeamMapping::create([
-            'teams_id' => $teamId,
-            'member_id' => $userId,
-            'role_id' => $ownerRoleId,
-            'joined_at' => now(),
-        ]);
-    }
-
-    private function uploadTeamIcon($team, $icon)
-    {
-        $folderId = $this->driveService->getTeamIconFolderId();
-        $fileName = "{$team->id}_" . time() . "." . $icon->getClientOriginalExtension();
-        $result = $this->driveService->uploadFile($fileName, $icon, $folderId);
-
-        $team->icon = $this->driveService->getImageLink($result->id);
-        $team->is_gdrive_icon = true;
-        $team->save();
-    }
-
-    private function isUserAlreadyMember($teamId, $userId): bool
-    {
-        return TeamMapping::where('teams_id', $teamId)
-            ->where('member_id', $userId)
-            ->exists();
-    }
-
-    private function createGuestRole($teamId, $userId)
-    {
-        $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
-
-        TeamMapping::create([
-            'teams_id' => $teamId,
-            'member_id' => $userId,
-            'role_id' => $guestRoleId,
-        ]);
-    }
-
-    private function getTeamMembersWithDetails($teamId)
-    {
-        $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
-
-        return DB::table('teams_mapping')
-            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
-            ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
-            ->select(
-                'users.id',
-                'users.name',
-                'users.avatar',
-                'users.email',
-                'teams_roles.name as role'
-            )
-            ->where('teams_mapping.teams_id', $teamId)
-            ->where('teams_mapping.role_id', '!=', $guestRoleId)
-            ->orderByRaw("
-                CASE 
-                    WHEN teams_roles.name = 'Owner' THEN 0 
-                    ELSE 1 
-                END, 
-                teams_mapping.joined_at ASC
-            ")
-            ->get();
-    }
-
-    private function getTeamApplicationsWithDetails($teamId, $guestRoleId)
-    {
-        return DB::table('teams_mapping')
-            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
-            ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
-            ->select(
-                'users.id',
-                'users.name',
-                'users.avatar',
-                'users.email',
-                DB::raw("'Guest' as role")
-            )
-            ->where('teams_mapping.teams_id', $teamId)
-            ->where('teams_mapping.role_id', $guestRoleId)
-            ->get();
-    }
-
-    private function getTeamOwner($teamId)
-    {
-        return DB::table('teams_mapping')
-            ->join('users', 'teams_mapping.member_id', '=', 'users.id')
-            ->where('teams_mapping.teams_id', $teamId)
-            ->where('teams_mapping.role_id', TeamRole::where('name', 'Owner')->first()->id)
-            ->select(
-                'users.id',
-                'users.name',
-                'users.avatar',
-                'users.email',
-                DB::raw("'Owner' as role")
-            )
-            ->first();
-    }
-
     /**
      * Kick a member from the team.
      */
     public function kickMember(Request $request, $teamId, $memberId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
         if (!$team) {
             return redirect()->back()->withErrors(['team' => 'Team not found.']);
         }
 
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
-        $memberToKick = $this->getUserTeamMapping($teamId, $memberId);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
+        $memberToKick = $this->teamService->getUserTeamMapping($teamId, $memberId);
 
         if (!$teamMapping || !$memberToKick) {
             return redirect()->back()->withErrors(['member' => 'Invalid member or insufficient permissions.']);
@@ -323,13 +163,13 @@ class TeamController extends Controller
      */
     public function acceptNewMember(Request $request, $teamId, $memberId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
         if (!$team) {
             return redirect()->back()->withErrors(['team' => 'Team not found.']);
         }
 
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
-        $applicant = $this->getUserTeamMapping($teamId, $memberId);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
+        $applicant = $this->teamService->getUserTeamMapping($teamId, $memberId);
 
         if (!$teamMapping || !$applicant) {
             return redirect()->back()->withErrors(['application' => 'Invalid application or insufficient permissions.']);
@@ -354,13 +194,13 @@ class TeamController extends Controller
      */
     public function declineNewMember(Request $request, $teamId, $memberId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
         if (!$team) {
             return redirect()->back()->withErrors(['team' => 'Team not found.']);
         }
 
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
-        $applicant = $this->getUserTeamMapping($teamId, $memberId);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
+        $applicant = $this->teamService->getUserTeamMapping($teamId, $memberId);
 
         if (!$teamMapping || !$applicant) {
             return redirect()->back()->withErrors(['application' => 'Invalid application or insufficient permissions.']);
@@ -382,13 +222,13 @@ class TeamController extends Controller
      */
     public function destroy(Request $request, $teamId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
 
         if (!$team) {
             return redirect()->back()->withErrors(['team' => 'Team not found.']);
         }
 
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
         $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
 
         if (!$teamMapping || $teamMapping->role_id !== $ownerRoleId) {
@@ -396,7 +236,7 @@ class TeamController extends Controller
         }
 
         DB::transaction(function () use ($team) {
-            TeamMapping::where('teams_id', $team->id)->delete();
+            TeamMapping::where('team_id', $team->id)->delete();
 
             if ($team->is_gdrive_icon && $team->icon) {
                 $fileId = $this->driveService->getFileIdFromUrl($team->icon);
@@ -414,13 +254,13 @@ class TeamController extends Controller
      */
     public function update(Request $request, $teamId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
 
         if (!$team) {
             return redirect()->back()->withErrors(['team' => 'Team not found.']);
         }
 
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
         $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
 
         if (!$teamMapping || $teamMapping->role_id !== $ownerRoleId) {
@@ -442,7 +282,7 @@ class TeamController extends Controller
                 $this->driveService->deleteFile($fileId);
             }
 
-            $this->uploadTeamIcon($team, $request->file('icon'));
+            $this->teamService->uploadTeamIcon($team, $request->file('icon'));
         }
 
         $team->save();
@@ -451,40 +291,24 @@ class TeamController extends Controller
     }
 
     /**
-     * Delete a team's icon from Google Drive.
-     */
-    private function deleteTeamIcon(Team $team)
-    {
-        if ($team->is_gdrive_icon && $team->icon) {
-            $fileId = $this->driveService->getFileIdFromUrl($team->icon);
-            $this->driveService->deleteFile($fileId);
-
-            // Reset the icon fields in the database
-            $team->icon = null;
-            $team->is_gdrive_icon = false;
-            $team->save();
-        }
-    }
-
-    /**
      * Handle the deletion of a team's icon.
      */
     public function destroyIcon(Request $request, $teamId)
     {
-        $team = $this->getTeamOrFail($teamId);
+        $team = $this->teamService->getTeamOrFail($teamId);
 
         if (!$team) {
             return redirect()->back()->withErrors(['team' => 'Team not found.']);
         }
 
-        $teamMapping = $this->getUserTeamMapping($teamId, $request->user()->id);
+        $teamMapping = $this->teamService->getUserTeamMapping($teamId, $request->user()->id);
         $ownerRoleId = TeamRole::where('name', 'Owner')->first()->id;
 
         if (!$teamMapping || $teamMapping->role_id !== $ownerRoleId) {
             return redirect()->back()->withErrors(['permission' => 'Only the team owner can delete the team icon.']);
         }
 
-        $this->deleteTeamIcon($team);
+        $this->teamService->deleteTeamIcon($team);
 
         return redirect()->back()->with('status', 'Team icon deleted successfully.');
     }
@@ -497,14 +321,14 @@ class TeamController extends Controller
         $userId = $request->user()->id;
 
         $teams = Team::select('teams.id', 'teams.name', 'teams.code', 'teams.icon', 'teams.description')
-            ->join('teams_mapping', 'teams.id', '=', 'teams_mapping.teams_id')
+            ->join('teams_mapping', 'teams.id', '=', 'teams_mapping.team_id')
             ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
-            ->where('teams_mapping.member_id', $userId)
+            ->where('teams_mapping.user_id', $userId)
             ->whereIn('teams_roles.name', ['Owner', 'Member'])
             ->get()
             ->map(function ($team) use ($userId) {
                 $members = DB::table('teams_mapping')
-                    ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+                    ->join('users', 'teams_mapping.user_id', '=', 'users.id')
                     ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
                     ->select(
                         'users.id',
@@ -513,7 +337,7 @@ class TeamController extends Controller
                         'users.avatar',
                         'teams_roles.name as role'
                     )
-                    ->where('teams_mapping.teams_id', $team->id)
+                    ->where('teams_mapping.team_id', $team->id)
                     ->where('teams_roles.name', '!=', 'Guest')
                     ->orderByRaw("
                         CASE 

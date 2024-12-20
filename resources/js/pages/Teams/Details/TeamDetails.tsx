@@ -1,7 +1,7 @@
 import PageTitle from "@/components/ui/page-title";
 import MainLayout from "@/layouts/Main/HomeLayout";
 import { PageProps } from "@/types";
-import { MdSpaceDashboard } from "react-icons/md";
+import { RiTeamFill } from "react-icons/ri";
 import TeamApplication from "./Partials/TeamApplication";
 import TeamInformation from "./Partials/TeamInformation";
 import TeamMember from "./Partials/TeamMember";
@@ -17,10 +17,10 @@ export default function TeamDetails(props: Props) {
     const { auth, team, teamApplications, teamMembers, teamOwner } = props;
 
     return (
-        <MainLayout auth={props.auth} title="Dashboard" hasPadding>
+        <MainLayout auth={props.auth} title="Team Details" hasPadding>
             <PageTitle
                 title="Team Details"
-                icon={<MdSpaceDashboard className="size-6 md:size-7" />}
+                icon={<RiTeamFill className="size-6 md:size-7" />}
             />
 
             <div className="flex flex-col gap-4">

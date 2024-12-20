@@ -6,7 +6,7 @@ import { PlusIcon } from "lucide-react";
 const AddTeamButton: React.FC = () => {
     return (
         <Card className="w-full justify-center items-center flex flex-col">
-            <CardContent className="flex flex-col justify-center items-center mt-6 p-0">
+            <CardContent className="flex flex-col justify-center items-center my-6 p-0">
                 <UserModalTeam
                     triggerButton={
                         <Button

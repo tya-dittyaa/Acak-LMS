@@ -1,7 +1,7 @@
 type TaskPriority = "Low" | "Medium" | "High";
 type TaskStatus = "Open" | "In Progress" | "Completed" | "Overdue";
 
-interface ITaskData {
+interface ITask {
     id: string;
     title: string;
     description: string;

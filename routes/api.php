@@ -15,4 +15,10 @@ Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
     Route::patch('/{teamId}/accept/{memberId}', [TeamController::class, 'acceptNewMember'])->name('api.teams.accept');
     Route::patch('/{teamId}/decline/{memberId}', [TeamController::class, 'declineNewMember'])->name('api.teams.decline');
   });
+
+  Route::prefix('tasks')->group(function () {
+    Route::post('/', [TaskController::class, 'store'])->name('api.tasks.store');
+    Route::delete('/{taskId}', [TaskController::class, 'destroy'])->name('api.tasks.destroy');
+    Route::post('/{taskId}', [TaskController::class, 'update'])->name('api.tasks.update');
+  });
 });

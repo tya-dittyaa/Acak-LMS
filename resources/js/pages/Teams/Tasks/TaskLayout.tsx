@@ -4,7 +4,9 @@ import { PageProps } from "@/types";
 import { FaTasks } from "react-icons/fa";
 
 interface props extends PageProps {
-    tasks: ITaskData[];
+    team: ITeam;
+    tasks: ITask[];
+    teamMembers: IUserTeam[];
 }
 
 export default function TaskLayout(props: props) {

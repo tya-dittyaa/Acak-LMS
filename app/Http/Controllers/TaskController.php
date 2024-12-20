@@ -37,11 +37,14 @@ class TaskController extends Controller
 
     $tasks = DB::table('tasks')
       ->select('tasks.id', 'tasks.title', 'tasks.description', 'tasks.priority', 'tasks.due_date', 'tasks.status', 'tasks.team_id')
-      ->join('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
-      ->join('teams_mapping', 'task_assignees.user_id', '=', 'teams_mapping.user_id')
-      ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
+      ->leftJoin('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
+      ->leftJoin('teams_mapping', 'task_assignees.user_id', '=', 'teams_mapping.user_id')
+      ->leftJoin('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
       ->where('tasks.team_id', $teamId)
-      ->where('teams_roles.name', '!=', 'Guest')
+      ->where(function ($query) {
+        $query->whereNull('teams_roles.name')
+          ->orWhere('teams_roles.name', '!=', 'Guest');
+      })
       ->get()
       ->map(function ($task) {
         $assignees = DB::table('task_assignees')
@@ -64,7 +67,7 @@ class TaskController extends Controller
           'title' => $task->title,
           'description' => $task->description,
           'priority' => $task->priority,
-          'assigned_to' => $assignees,
+          'assigned_to' => $assignees->isEmpty() ? [] : $assignees,
           'due_date' => $task->due_date,
           'status' => $task->status,
         ];

@@ -118,6 +118,8 @@ class TaskController extends Controller
     }
 
     try {
+      DB::beginTransaction();
+
       $task = Task::create([
         'title' => $request->title,
         'description' => $request->description,
@@ -136,10 +138,12 @@ class TaskController extends Controller
         }
       }
 
+      DB::commit();
       return redirect()->back()->with('success', 'Task created successfully.');
     } catch (\Exception $e) {
+      DB::rollBack();
       Log::error('Task creation failed: ', ['error' => $e->getMessage()]);
-      return Inertia::render('Error', ['status' => 500, 'message' => 'Failed to create task.']);
+      return redirect()->back()->with('error', 'An error occurred while creating the task.');
     }
   }
 }

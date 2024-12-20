@@ -27,11 +27,11 @@ return new class extends Migration
         Schema::create('task_assignees', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('task_id'); // Relasi ke tasks
-            $table->uuid('member_id'); // Relasi ke users (member yang di-assign)
+            $table->uuid('user_id'); // Relasi ke users (member yang di-assign)
             $table->timestamps();
 
             $table->foreign('task_id')->references('id')->on('tasks')->cascadeOnDelete();
-            $table->foreign('member_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 

@@ -323,12 +323,12 @@ class TeamController extends Controller
         $teams = Team::select('teams.id', 'teams.name', 'teams.code', 'teams.icon', 'teams.description')
             ->join('teams_mapping', 'teams.id', '=', 'teams_mapping.team_id')
             ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
-            ->where('teams_mapping.member_id', $userId)
+            ->where('teams_mapping.user_id', $userId)
             ->whereIn('teams_roles.name', ['Owner', 'Member'])
             ->get()
             ->map(function ($team) use ($userId) {
                 $members = DB::table('teams_mapping')
-                    ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+                    ->join('users', 'teams_mapping.user_id', '=', 'users.id')
                     ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
                     ->select(
                         'users.id',

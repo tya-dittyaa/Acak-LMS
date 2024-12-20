@@ -7,6 +7,7 @@ use App\Models\TeamMapping;
 use App\Models\TeamRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TeamService
 {
@@ -64,7 +65,7 @@ class TeamService
   public function getUserTeamMapping($teamId, $userId)
   {
     return TeamMapping::where('team_id', $teamId)
-      ->where('member_id', $userId)
+      ->where('user_id', $userId)
       ->first();
   }
 
@@ -85,7 +86,7 @@ class TeamService
 
     TeamMapping::create([
       'team_id' => $teamId,
-      'member_id' => $userId,
+      'user_id' => $userId,
       'role_id' => $ownerRoleId,
       'joined_at' => now(),
     ]);
@@ -105,7 +106,7 @@ class TeamService
   public function isUserAlreadyMember($teamId, $userId): bool
   {
     return TeamMapping::where('team_id', $teamId)
-      ->where('member_id', $userId)
+      ->where('user_id', $userId)
       ->exists();
   }
 
@@ -115,7 +116,7 @@ class TeamService
 
     TeamMapping::create([
       'team_id' => $teamId,
-      'member_id' => $userId,
+      'user_id' => $userId,
       'role_id' => $guestRoleId,
     ]);
   }
@@ -123,7 +124,7 @@ class TeamService
   public function getTeamApplicationsWithDetails($teamId, $guestRoleId)
   {
     return DB::table('teams_mapping')
-      ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+      ->join('users', 'teams_mapping.user_id', '=', 'users.id')
       ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
       ->select(
         'users.id',
@@ -140,7 +141,7 @@ class TeamService
   public function getTeamOwner($teamId)
   {
     return DB::table('teams_mapping')
-      ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+      ->join('users', 'teams_mapping.user_id', '=', 'users.id')
       ->where('teams_mapping.team_id', $teamId)
       ->where('teams_mapping.role_id', TeamRole::where('name', 'Owner')->first()->id)
       ->select(
@@ -158,7 +159,7 @@ class TeamService
     return DB::table("teams")
       ->join("teams_mapping", "teams.id", "=", "teams_mapping.team_id")
       ->join("teams_roles", "teams_mapping.role_id", "=", "teams_roles.id")
-      ->where("teams_mapping.member_id", $userId)
+      ->where("teams_mapping.user_id", $userId)
       ->where("teams_roles.name", "!=", "Guest")
       ->select("teams.*", "teams_roles.name as role_name")
       ->get();
@@ -169,7 +170,7 @@ class TeamService
     $guestRoleId = TeamRole::where('name', 'Guest')->first()->id;
 
     return DB::table('teams_mapping')
-      ->join('users', 'teams_mapping.member_id', '=', 'users.id')
+      ->join('users', 'teams_mapping.user_id', '=', 'users.id')
       ->join('teams_roles', 'teams_mapping.role_id', '=', 'teams_roles.id')
       ->select(
         'users.id',

@@ -14,7 +14,7 @@ class TeamMapping extends Model
 
   protected $fillable = [
     'team_id',
-    'member_id',
+    'user_id',
     'role_id',
     'joined_at',
   ];
@@ -32,7 +32,7 @@ class TeamMapping extends Model
    */
   public function member()
   {
-    return $this->belongsTo(User::class, 'member_id');
+    return $this->belongsTo(User::class, 'user_id');
   }
 
   /**

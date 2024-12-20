@@ -42,7 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function teams()
     {
-        return $this->belongsToMany(Team::class, 'teams_mapping', 'member_id', 'team_id')
+        return $this->belongsToMany(Team::class, 'teams_mapping', 'user_id', 'team_id')
             ->withPivot('role_id', 'joined_at')
             ->withTimestamps();
     }
@@ -52,7 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function tasks()
     {
-        return $this->belongsToMany(Task::class, 'task_assignees', 'member_id', 'task_id')
+        return $this->belongsToMany(Task::class, 'task_assignees', 'user_id', 'task_id')
             ->withTimestamps();
     }
 }
